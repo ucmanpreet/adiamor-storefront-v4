@@ -30,7 +30,7 @@
             :active="true"
             :escape-deactivates="false"
             :initial-focus="() => searchInput || undefined"
-            :fallback-focus="() => popover"
+            :fallback-focus="() => popover || undefined"
             @deactivate="closePopover"
         >
         <div

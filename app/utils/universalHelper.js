@@ -11,6 +11,10 @@ export function redirectionUrl(item) {
 export function correctUrl(url) {
     let productUrl = url && url?.startsWith("/") ? url : `/${url}`;
     if (productUrl?.includes("your-setting")) return productUrl;
+    // Links must already end with "/" (see 00.trailing-slash middleware); otherwise the client redirect uses replace
+    // and the search page drops out of browser history, so Back skips it.
+    const [, path, suffix] = productUrl.match(/^([^?#]*)(.*)$/);
+    if (!path.endsWith("/") && !path.split("/").pop().includes(".")) return `${path}/${suffix}`;
     return productUrl;
 }
 

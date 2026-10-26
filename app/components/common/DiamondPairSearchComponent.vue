@@ -102,31 +102,33 @@
                                 <DiamondPairSearchInsideSkeleton v-for="n in 10" :key="n" />
                             </div>
                             <template v-else-if="filteredList?.length">
-                                <DynamicScroller ref="dynamicScrollerList" :items="filteredList" key-field="pair_id"
-                                    page-mode :buffer="300" :prerender="20" :min-item-size="80" emit-update  @update="onScrollerUpdate">
-                                    <template #default="{ item, index, active }">
-                                        <DynamicScrollerItem :item="item" :active="active"
-                                            :data-index="index"
-                                            item-class="even:bg-gray-100">
-                                            <!-- ROW WRAPPER -->
-                                            <div class="w-full" :class="{
-                                                'bg-gray-100': index % 2 === 0,
-                                                'bg-primary/7': expandedSku === item.sku
-                                            }">
-                                                <div class="flex flex-col w-full cursor-pointer border-b border-gray-200 last:border-b-0 hover:bg-primary/7 relative min-w-full"
-                                                    @click.stop="toggleItem(item)">
-                                                    <!-- Header -->
-                                                    <DiamondPairListHeader :product="item" />
-                                                </div>
+                                <div ref="listContainer" class="relative"
+                                    :style="{ height: `${listVirtualizer.getTotalSize()}px` }">
+                                    <div v-for="virtualRow in listVirtualRows" :key="virtualRow.key"
+                                        :data-index="virtualRow.index"
+                                        :ref="(el) => listVirtualizer.measureElement(el)"
+                                        class="absolute top-0 left-0 w-full"
+                                        :style="{ transform: `translateY(${virtualRow.start - listScrollMargin}px)` }">
+                                        <template v-for="item in [filteredList[virtualRow.index]].filter(Boolean)" :key="item.pair_id">
+                                    <!-- ROW WRAPPER -->
+                                    <div class="w-full" :class="{
+                                        'bg-gray-100': virtualRow.index % 2 === 0,
+                                        'bg-primary/7': expandedSku === item.sku
+                                    }">
+                                        <div class="flex flex-col w-full cursor-pointer border-b border-gray-200 last:border-b-0 hover:bg-primary/7 relative min-w-full"
+                                            @click.stop="toggleItem(item)">
+                                            <!-- Header -->
+                                            <DiamondPairListHeader :product="item" />
+                                        </div>
 
-                                                <!-- Expandable content -->
-                                                <div v-if="expandedSku === item.sku">
-                                                    <DiamondPairListView :product="item" />
-                                                </div>
-                                            </div>
-                                        </DynamicScrollerItem>
-                                    </template>
-                                </DynamicScroller>
+                                        <!-- Expandable content -->
+                                        <div v-if="expandedSku === item.sku">
+                                            <DiamondPairListView :product="item" />
+                                        </div>
+                                    </div>
+                                        </template>
+                                    </div>
+                                </div>
                             </template>
                             <div v-else-if="!loader && !filteredList?.length"
                                 class="abolute inset-0 flex flex-col items-center justify-center pt-4 pb-24 gap-5">
@@ -177,9 +179,7 @@
 import apiClient from "~/api-client/rest-api/index.js";
 import { attributeCodes } from "~/utils/searchConstant";
 import { diamondFilters } from '@/static/js/recommendedFilters';
-import { scrollToRow } from '~/utils/virtualScroll.js';
-import "vue-virtual-scroller/dist/vue-virtual-scroller.css";
-import { DynamicScroller, DynamicScrollerItem } from "vue-virtual-scroller";
+import { useWindowVirtualizer } from '@tanstack/vue-virtual';
 import DiamondPairListView from "./DiamondPairListView.vue";
 import DiamondPairListHeader from "./DiamondPairListHeader.vue";
 import SearchBanner from "~/components/common/SearchBanner.vue";
@@ -237,7 +237,8 @@ let observer = null;
 let hasFetchedOnce = false;
 
 const productContainer = ref(null);
-const dynamicScrollerList = ref(null);
+const listContainer = ref(null);
+const listScrollMargin = ref(0);
 const infiniteTrigger = ref(null);
 
 const phoneNumber = computed(() => store.phoneNumber);
@@ -252,6 +253,25 @@ const tabs = computed(() => {
     let compareCount = store.comparePairList?.length;
     if (!$isMobile) data.push({ text: `Compare` + ` ${compareCount ? `(${compareCount.toLocaleString()})` : ''}`, icon: 'compare-fill' });
     return data;
+});
+
+// List rows are virtualized on the window; scrollMargin is the list's distance from the top of the document.
+const updateListScrollMargin = () => {
+    if (!listContainer.value) return;
+    listScrollMargin.value = listContainer.value.getBoundingClientRect().top + window.scrollY;
+};
+const listVirtualizer = useWindowVirtualizer(computed(() => ({
+    count: filteredList.value?.length || 0,
+    estimateSize: () => 80,
+    overscan: Math.ceil(300 / 80),
+    scrollMargin: listScrollMargin.value,
+    getItemKey: (index) => filteredList.value?.[index]?.pair_id ?? index,
+})));
+const listVirtualRows = computed(() => listVirtualizer.value.getVirtualItems());
+watch(() => [filteredList.value?.length, isFilterShow.value, loader.value], () => nextTick(updateListScrollMargin), { flush: 'post' });
+watch(listVirtualRows, (rows) => {
+    if (!rows.length) return;
+    onScrollerUpdate(0, 0, rows[0].index, rows[rows.length - 1].index);
 });
 
 async function onScrollerUpdate(start, end, visibleStartIndex, visibleEndIndex) {
@@ -812,7 +832,6 @@ function finishRestoration(scrollY, productUrlKey) {
     nextTick(() => {
         setTimeout(() => {
             let rowIndex = 0;
-            let scrollItem = null;
             const getPairKeySegment = (url) => {
                 const [path, query] = url.split('?');
                 const params = new URLSearchParams(query);
@@ -832,14 +851,13 @@ function finishRestoration(scrollY, productUrlKey) {
             if (rowIndex !== -1) {
                 expandedSku.value = filteredList.value[rowIndex]?.sku;
             }
-            scrollItem = dynamicScrollerList.value;
             // to show item in viewport
             rowIndex = rowIndex > 7 ? rowIndex - 7 : rowIndex;
 
             // (the original `if (this.isMobile) rowIndex -= 2` referenced an undefined property and never ran)
             if (rowIndex !== -1) {
                 nextTick(() => {
-                    scrollToRow(scrollItem, rowIndex)
+                    listVirtualizer.value.scrollToIndex(rowIndex, { align: 'start' })
                 })
             }
             // window.scrollTo(0, scrollY);

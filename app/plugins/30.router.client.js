@@ -4,15 +4,14 @@ import { STATIC_ROUTES } from '~/utils/staticRoutes'
 export default defineNuxtPlugin((nuxtApp) => {
   const router = useRouter()
   const store = useMainStore()
-  let isBackNavigation = false
 
   // vue-router 3 `router.history._startLocation`: URL the visit started at (summary page checks for 'review')
   nuxtApp.provide('startLocation', window.location.pathname + window.location.search + window.location.hash)
 
-  if (!window.__popstateAdded) {
-    window.__popstateAdded = true
-    window.addEventListener('popstate', () => { isBackNavigation = true })
-  }
+  // vue-router stores a `position` in history.state that drops on Back. Comparing it with the position of the last
+  // completed navigation is more reliable than a popstate flag: vue-router's own popstate handler starts the
+  // navigation (and runs beforeEach) before a flag set by a later listener would be read.
+  let lastPosition = window.history.state?.position ?? 0
 
   // Chunk load failure after a new deploy -> reload to get fresh assets
   nuxtApp.hook('app:chunkError', () => { window.location.reload() })
@@ -29,9 +28,12 @@ export default defineNuxtPlugin((nuxtApp) => {
     }
   })
 
+  router.afterEach(() => {
+    lastPosition = window.history.state?.position ?? 0
+  })
+
   router.beforeEach(async (to, from) => {
-    to.meta.isBack = isBackNavigation
-    isBackNavigation = false
+    to.meta.isBack = (window.history.state?.position ?? 0) < lastPosition
 
     try {
       if (store.metaPath !== to.path) {

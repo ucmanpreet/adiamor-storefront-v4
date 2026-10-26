@@ -49,13 +49,17 @@
                     <client-only>
                         <SettingInsideSearchSkeleton v-if="loader" />
                         <template v-else-if="filteredList?.length">
-                            <DynamicScroller ref="dynamicScroller" :items="chunkedFilteredList" :min-item-size="380"
-                                key-field="id" page-mode :buffer="gridBuffer" :prerender="20"  emit-update @update="onScrollerUpdate">
-                                <template v-slot="{ item, index, active }">
-                                    <DynamicScrollerItem :item="item" :active="active" :data-index="index">
+                            <div ref="gridContainer" class="relative"
+                                :style="{ height: `${gridVirtualizer.getTotalSize()}px` }">
+                                <div v-for="virtualRow in gridVirtualRows" :key="virtualRow.key"
+                                    :data-index="virtualRow.index"
+                                    :ref="(el) => gridVirtualizer.measureElement(el)"
+                                    class="absolute top-0 left-0 w-full"
+                                    :style="{ transform: `translateY(${virtualRow.start - gridScrollMargin}px)` }">
+                                    <template v-for="item in [chunkedFilteredList[virtualRow.index]].filter(Boolean)" :key="item.id">
                                         <div
                                             class="pt-3 pb-4 sm:pb-6 grid grid-cols-2 lg:grid-cols-4 gap-x-2 gap-y-8 sm:gap-x-4 md:gap-x-8 md:gap-y-10 grid-flow-row-dense lg:space-x-0">
-                                            <div v-for="setting in item.data" :key="setting.sku ?? index"
+                                            <div v-for="setting in item.data" :key="setting.sku ?? virtualRow.index"
                                                 :class="[setting?.colspan ? `col-span-${setting?.colspan}` : '']"
                                                 v-show="setting?.sku != 'placeholder'">
                                                 
@@ -72,9 +76,9 @@
                                                 
                                             </div>
                                         </div>
-                                    </DynamicScrollerItem>
-                                </template>
-                            </DynamicScroller>
+                                    </template>
+                                </div>
+                            </div>
                             <!-- <div class="sr-only" role="status" aria-live="polite">
                                 Showing {{ filteredList.length }} products
                             </div> -->
@@ -120,9 +124,7 @@
 </template>
 <script setup>
 import apiClient from "~/api-client/rest-api/index.js";
-import { scrollToRow } from '~/utils/virtualScroll.js';
-import "vue-virtual-scroller/dist/vue-virtual-scroller.css";
-import { DynamicScroller, DynamicScrollerItem } from "vue-virtual-scroller";
+import { useWindowVirtualizer } from '@tanstack/vue-virtual';
 import { settingSotingOptions, ringFilters } from '@/static/js/recommendedFilters';
 import SearchBanner from '~/components/common/SearchBanner.vue';
 import CustomFilter from "~/components/filter/CustomFilter.vue";
@@ -179,7 +181,8 @@ let observer = null;
 // (`this.diamondCaratCode` was never defined on this component, so that comparison in updateFilterRanges is always false)
 const diamondCaratCode = undefined;
 
-const dynamicScroller = ref(null);
+const gridContainer = ref(null);
+const gridScrollMargin = ref(0);
 const productContainer = ref(null);
 // Root element of a child component instance (the public `$el` property)
 const COMPONENT_ROOT_EL = '$' + 'el';
@@ -192,10 +195,6 @@ const isMobile = computed(() => $isMobile);
 const columns = computed(() => {
     if (isMobile.value) return 2;
     return 4; // Desktop
-});
-const gridBuffer = computed(() => {
-    const rows = Math.ceil(filteredList.value?.length / columns.value);
-    return Math.max(rows * 400 + 600, 1200);
 });
 const chunkedFilteredList = computed(() => {
     if (!filteredList.value?.length) return []
@@ -212,6 +211,24 @@ const chunkedFilteredList = computed(() => {
     }
 
     return result;
+});
+// Grid rows are virtualized on the window; scrollMargin is the grid's distance from the top of the document.
+const updateGridScrollMargin = () => {
+    if (!gridContainer.value) return;
+    gridScrollMargin.value = gridContainer.value.getBoundingClientRect().top + window.scrollY;
+};
+const gridVirtualizer = useWindowVirtualizer(computed(() => ({
+    count: chunkedFilteredList.value.length,
+    estimateSize: () => 380,
+    overscan: Math.ceil(1200 / 380),
+    scrollMargin: gridScrollMargin.value,
+    getItemKey: (index) => chunkedFilteredList.value[index]?.id ?? index,
+})));
+const gridVirtualRows = computed(() => gridVirtualizer.value.getVirtualItems());
+watch(() => [filteredList.value?.length, columns.value, isFilterShow.value, loader.value], () => nextTick(updateGridScrollMargin), { flush: 'post' });
+watch(gridVirtualRows, (rows) => {
+    if (!rows.length) return;
+    onScrollerUpdate(0, 0, rows[0].index, rows[rows.length - 1].index);
 });
 const appliedFilterJson = computed(() => {
     let { finalFilterData } = getFilterValues();
@@ -382,7 +399,7 @@ function finishRestoration(scrollY, productUrlKey) {
             }
             if (rowIndex !== -1) {
                 nextTick(() => {
-                    scrollToRow(dynamicScroller.value, rowIndex)
+                    gridVirtualizer.value.scrollToIndex(rowIndex, { align: 'start' })
                 })
             }
 

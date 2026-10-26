@@ -87,11 +87,15 @@ onMounted(() => {
 })
 
 onUpdated(() => {
-  // slides or breakpoint settings changed
-  if (embla) {
+  // Re-init only when slides or breakpoint settings really changed. Re-initialising on every parent re-render
+  // (and every visibility update, which re-renders this component) resets the scroll mid-animation.
+  if (!embla) return
+  const key = optionsKey()
+  if (key !== lastOptionsKey) {
+    lastOptionsKey = key
     embla.reInit(emblaOptions())
-    syncInView()
   }
+  syncInView()
 })
 
 onBeforeUnmount(() => {
@@ -99,6 +103,10 @@ onBeforeUnmount(() => {
   embla?.destroy()
 })
 
+let lastOptionsKey = ''
+function optionsKey() {
+  return `${slideCount}|${props.infinite}|${activeSettings.value.slidesToScroll}`
+}
 function emblaOptions() {
   return {
     loop: props.infinite,
@@ -111,12 +119,15 @@ function emblaOptions() {
 }
 function init() {
   embla = EmblaCarousel(viewport.value, emblaOptions())
+  lastOptionsKey = optionsKey()
   embla.on('select', syncInView).on('slidesInView', syncInView).on('reInit', syncInView)
   syncInView()
 }
 function syncInView() {
   if (!embla) return
-  inView.value = embla.slidesInView()
+  const next = embla.slidesInView()
+  // Only assign when the visible set changes: a new array each time would re-render and loop back into onUpdated
+  if (next.join(',') !== inView.value.join(',')) inView.value = next
 }
 function next() { embla?.scrollNext() }
 function prev() { embla?.scrollPrev() }

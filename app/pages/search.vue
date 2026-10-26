@@ -41,7 +41,6 @@ export default {
       const saved = await db.get(to.path);
       if (saved) await db.delete(to.path);
       clearTimeout(timer);
-
       callNext(vm => {
         if (saved && from.name === 'all' && from.query?.rfr === 'search' && to.meta?.isBack) {
           vm.filterState = saved;
@@ -231,7 +230,9 @@ onBeforeRouteLeave(async (to, from) => {
           filterState.value.productUrlKey = from.path?.includes('diamond-pair') ? to.fullPath : to.path;
           // distinct await to ensure DB write doesn't block nav if it fails
           if (db) {
-            await db.set(from.path, filterState.value).catch(e => console.warn('DB Write failed', e));
+            // IndexedDB cannot clone Vue reactive proxies or functions; store a plain JSON copy
+            const plainState = JSON.parse(JSON.stringify(filterState.value));
+            await db.set(from.path, plainState).catch(e => console.warn('DB Write failed', e));
           }
         }
       }

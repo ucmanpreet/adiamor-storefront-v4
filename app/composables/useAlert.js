@@ -37,6 +37,7 @@ export function createSwalAlert(message, type, isFixed = false) {
                 position: 'top-end',
                 showConfirmButton: false,
                 timer: isFixed ? undefined : timer,
+                customClass: { container: 'app-toast-container', popup: 'app-toast-popup' },
             })
             Toast.fire({
                 title: null,

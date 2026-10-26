@@ -391,74 +391,70 @@
 
               <!-- ── List view ─────────────────────────────────────────────── -->
               <div role="list" aria-label="Diamond search results" v-if="viewMode === 'list'">
-                <DynamicScroller
-                  ref="dynamicScrollerList"
-                  :items="filteredList"
-                  key-field="sku"
-                  page-mode
-                  :buffer="listBuffer"
-                  :prerender="10"
-                  :min-item-size="80"
-                  emit-update
-                  @update="onScrollerUpdate"
+                <div
+                  ref="listContainer"
+                  class="relative"
+                  :style="{ height: `${listVirtualizer.getTotalSize()}px` }"
                 >
-                  <template #default="{ item, index, active }">
-                    <DynamicScrollerItem
-                      :item="item"
-                      :active="active"
-                      :data-index="index"
-                      item-class="even:bg-gray-100"
+                  <div
+                    v-for="virtualRow in listVirtualRows"
+                    :key="virtualRow.key"
+                    :data-index="virtualRow.index"
+                    :ref="(el) => listVirtualizer.measureElement(el)"
+                    class="absolute top-0 left-0 w-full"
+                    :style="{ transform: `translateY(${virtualRow.start - listScrollMargin}px)` }"
+                  >
+                    <template v-for="item in [filteredList[virtualRow.index]]" :key="item.sku">
+                    <!-- ROW WRAPPER -->
+                    <div
+                      role="listitem"
+                      class="w-full"
+                      :class="{
+                        'bg-gray-100': virtualRow.index % 2 === 0,
+                        'bg-primary/7': expandedSku === item.sku
+                      }"
+                      :ref="`listRow_${item.sku}`"
                     >
-                      <!-- ROW WRAPPER -->
                       <div
-                        role="listitem"
-                        class="w-full"
-                        :class="{
-                          'bg-gray-100': index % 2 === 0,
-                          'bg-primary/7': expandedSku === item.sku
-                        }"
-                        :ref="`listRow_${item.sku}`"
+                        class="flex flex-col w-full cursor-pointer border-b border-gray-200 last:border-b-0 hover:bg-primary/7 relative min-w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
+                        @click="toggleItem($event, item)"
+                        @keydown.enter.prevent="toggleItem($event, item)"
+                        @keydown.space.prevent="toggleItem($event, item)"
+                        role="button"
+                        tabindex="0"
+                        :data-row-sku="item.sku"
+                        :aria-expanded="expandedSku === item.sku ? 'true' : 'false'"
+                        :aria-controls="`row-detail-${item.sku}`"
+                        :aria-label="rowAriaLabel(item)"
                       >
-                        <div
-                          class="flex flex-col w-full cursor-pointer border-b border-gray-200 last:border-b-0 hover:bg-primary/7 relative min-w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
-                          @click="toggleItem($event, item)"
-                          @keydown.enter.prevent="toggleItem($event, item)"
-                          @keydown.space.prevent="toggleItem($event, item)"
-                          role="button"
-                          tabindex="0"
-                          :data-row-sku="item.sku"
-                          :aria-expanded="expandedSku === item.sku ? 'true' : 'false'"
-                          :aria-controls="`row-detail-${item.sku}`"
-                          :aria-label="rowAriaLabel(item)"
-                        >
-                          <DiamondListHeader :diamond="item" :nav="navRoute" />
-                        </div>
-
-                        <!-- Expandable detail panel — id must match aria-controls above -->
-                        <div
-                          v-if="expandedSku === item.sku"
-                          :id="`row-detail-${item.sku}`"
-                          :key="`${item.sku ?? index}_parent_list`"
-                          role="region"
-                          :aria-label="`Details for ${item.name}`"
-                        >
-                          <DiamondListViewMobile
-                            :key="`${item.sku ?? index}_mobile_list`"
-                            :diamond="item"
-                            :nav="navRoute"
-                            v-if="isMobile"
-                          />
-                          <DiamondListView
-                            :key="`${item.sku ?? index}_desktop_list`"
-                            :diamond="item"
-                            :nav="navRoute"
-                            v-else
-                          />
-                        </div>
+                        <DiamondListHeader :diamond="item" :nav="navRoute" />
                       </div>
-                    </DynamicScrollerItem>
-                  </template>
-                </DynamicScroller>
+
+                      <!-- Expandable detail panel — id must match aria-controls above -->
+                      <div
+                        v-if="expandedSku === item.sku"
+                        :id="`row-detail-${item.sku}`"
+                        :key="`${item.sku ?? virtualRow.index}_parent_list`"
+                        role="region"
+                        :aria-label="`Details for ${item.name}`"
+                      >
+                        <DiamondListViewMobile
+                          :key="`${item.sku ?? virtualRow.index}_mobile_list`"
+                          :diamond="item"
+                          :nav="navRoute"
+                          v-if="isMobile"
+                        />
+                        <DiamondListView
+                          :key="`${item.sku ?? virtualRow.index}_desktop_list`"
+                          :diamond="item"
+                          :nav="navRoute"
+                          v-else
+                        />
+                      </div>
+                    </div>
+                    </template>
+                  </div>
+                </div>
               </div>
             </template>
 
@@ -525,9 +521,6 @@
 <script setup>
 import apiClient from "~/api-client/rest-api/index.js";
 import { attributeCodes } from "~/utils/searchConstant";
-import { scrollToRow } from '~/utils/virtualScroll.js';
-import "vue-virtual-scroller/dist/vue-virtual-scroller.css";
-import { DynamicScroller, DynamicScrollerItem } from "vue-virtual-scroller";
 import { useWindowVirtualizer } from '@tanstack/vue-virtual';
 import { diamondFilters, diamondSortingOptions } from '@/static/js/recommendedFilters';
 import DiamondGridCard from '~/components/common/DiamondGridCard.vue';
@@ -547,7 +540,7 @@ import DiamondListHeader from "~/components/common/DiamondListHeader.vue";
 import DiamondListView from "~/components/common/DiamondListView.vue";
 import WithMediaCheckBox from "../filter/WithMediaCheckBox.vue";
 import { STATIC_ROUTES } from "~/utils/staticRoutes";
-import { cleanPostfix } from "~/utils/universalHelper";
+import { cleanPostfix, correctUrl } from "~/utils/universalHelper";
 import DiamondGridCardMobile from "./DiamondGridCardMobile.vue";
 import DiamondListViewMobile from "./DiamondListViewMobile.vue";
 
@@ -608,7 +601,8 @@ const root = ref(null);
 const productContainer = ref(null);
 const gridContainer = ref(null);
 const gridScrollMargin = ref(0);
-const dynamicScrollerList = ref(null);
+const listContainer = ref(null);
+const listScrollMargin = ref(0);
 const infiniteTrigger = ref(null);
 const tooltipClose = ref(null);
 const tooltipCloseMobile = ref(null);
@@ -667,6 +661,24 @@ const gridVirtualizer = useWindowVirtualizer(computed(() => ({
 })));
 const gridVirtualRows = computed(() => gridVirtualizer.value.getVirtualItems());
 watch(() => [filteredList.value?.length, viewMode.value, isFilterShow.value, loader.value], () => nextTick(updateGridScrollMargin), { flush: 'post' });
+// List rows use the same window virtualization; heights change when a row is expanded and are re-measured.
+const updateListScrollMargin = () => {
+  if (!listContainer.value) return;
+  listScrollMargin.value = listContainer.value.getBoundingClientRect().top + window.scrollY;
+};
+const listVirtualizer = useWindowVirtualizer(computed(() => ({
+  count: viewMode.value === 'list' ? (filteredList.value?.length || 0) : 0,
+  estimateSize: () => 80,
+  overscan: Math.ceil(listBuffer.value / 80),
+  scrollMargin: listScrollMargin.value,
+  getItemKey: (index) => filteredList.value?.[index]?.sku ?? index,
+})));
+const listVirtualRows = computed(() => listVirtualizer.value.getVirtualItems());
+watch(() => [filteredList.value?.length, viewMode.value, isFilterShow.value, loader.value], () => nextTick(updateListScrollMargin), { flush: 'post' });
+watch(listVirtualRows, (rows) => {
+  if (viewMode.value !== 'list' || !rows.length) return;
+  onScrollerUpdate(0, 0, rows[0].index, rows[rows.length - 1].index);
+});
 watch(gridVirtualRows, (rows) => {
   if (viewMode.value !== 'grid' || !rows.length) return;
   onScrollerUpdate(0, 0, rows[0].index, rows[rows.length - 1].index);
@@ -830,7 +842,7 @@ function toggleItem(event, item) {
   // Guard passed — row div is handling the event. Prevent Space from scrolling the page.
   if (event?.type === 'keydown') event?.preventDefault();
   isToggling = true;
-  // Capture scroll before DynamicScroller recalculates layout.
+  // Capture scroll before the virtualizer recalculates layout.
   const savedScrollY = window.scrollY;
   const wasExpanded = expandedSku.value === item.sku;
   expandedSku.value = wasExpanded ? null : item.sku;
@@ -1508,19 +1520,17 @@ function finishRestoration(scrollY, productUrlKey) {
   nextTick(() => {
     setTimeout(() => {
       let rowIndex = 0;
-      let scrollItem = null;
       if (viewMode.value === 'grid') {
         rowIndex = chunkedFilteredList.value.findIndex(row =>
-          row.data.some(item => item.url_key === productUrlKey)
+          row.data.some(item => correctUrl(item.url_key) === productUrlKey)
         )
       } else {
         rowIndex = filteredList.value.findIndex(row =>
-          row.url_key === productUrlKey
+          correctUrl(row.url_key) === productUrlKey
         )
         if (rowIndex !== -1) {
           expandedSku.value = filteredList.value[rowIndex]?.sku;
         }
-        scrollItem = dynamicScrollerList.value;
         // to show item in viewport
         rowIndex = rowIndex > 7 ? rowIndex - 7 : rowIndex;
       }
@@ -1528,6 +1538,7 @@ function finishRestoration(scrollY, productUrlKey) {
       if (isMobile.value) {
         rowIndex = rowIndex - 2;
       }
+
       console.log('rowIndex', rowIndex, 'PRODUCT URL KEY', productUrlKey);
 
       if (rowIndex !== -1) {
@@ -1535,7 +1546,7 @@ function finishRestoration(scrollY, productUrlKey) {
           if (viewMode.value === 'grid') {
             scrollGridToRow(rowIndex)
           } else {
-            scrollToRow(scrollItem, rowIndex)
+            listVirtualizer.value.scrollToIndex(rowIndex, { align: 'start' })
           }
         })
       }

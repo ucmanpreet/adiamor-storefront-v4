@@ -607,6 +607,8 @@ div[title="Live chat button"] > div {
   width: auto !important;
   max-width: 480px !important;
   padding: 0 !important; /* your inner div already has p-4 */
+  background: transparent !important; /* only the coloured message box should show, not a white frame */
+  box-shadow: none !important;
 }
 
 /* Make sure the long text wraps instead of overflowing */
