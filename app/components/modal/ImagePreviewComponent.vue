@@ -1,5 +1,5 @@
 <template>
-    <FocusTrap :active="true" :initial-focus="() => lightboxRoot">
+    <FocusTrap :active="true" :initial-focus="() => lightboxRoot || undefined">
         <div class="fixed inset-0 z-[999] h-screen w-full flex items-center justify-center" role="dialog"
             aria-modal="true" aria-label="Product image preview" tabindex="-1" ref="lightboxRoot"
             @keydown.esc="closeModal">

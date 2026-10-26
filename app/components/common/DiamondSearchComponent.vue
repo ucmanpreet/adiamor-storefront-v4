@@ -351,44 +351,43 @@
 
             <!-- ── Grid view ─────────────────────────────────────────────── -->
             <template v-if="filteredList?.length">
-              <DynamicScroller
-                ref="dynamicScroller"
-                :items="chunkedFilteredList"
-                :min-item-size="320"
-                key-field="id"
-                page-mode
-                :buffer="gridBuffer"
-                v-show="viewMode == 'grid'"
-                :prerender="6"
-                emit-update
-                @update="onScrollerUpdate"
+              <div
+                v-if="viewMode == 'grid'"
+                ref="gridContainer"
+                class="relative"
+                :style="{ height: `${gridVirtualizer.getTotalSize()}px` }"
               >
-                <template v-slot="{ item, index, active }">
-                  <DynamicScrollerItem :item="item" :active="active" :data-index="index">
-                    <div class="pt-3 pb-4 sm:pb-6 grid grid-cols-2 lg:grid-cols-3 gap-x-2 gap-y-8 sm:gap-x-4 md:gap-x-8 md:gap-y-10 grid-flow-row-dense lg:space-x-0 xl:grid-cols-3">
-                      <div
-                        v-for="diamond in item.data"
-                        :key="`${diamond.sku ?? index}_parent_grid`"
-                        class="h-full"
-                        :ref="`gridCard_${diamond.sku}`"
-                      >
-                        <DiamondGridCardMobile
-                          :key="`${diamond.sku ?? index}_mobile_grid`"
-                          :diamond="diamond"
-                          :nav="navRoute"
-                          v-if="isMobile"
-                        />
-                        <DiamondGridCard
-                          :key="`${diamond.sku ?? index}_desktop_grid`"
-                          :diamond="diamond"
-                          :nav="navRoute"
-                          v-else
-                        />
-                      </div>
+                <div
+                  v-for="virtualRow in gridVirtualRows"
+                  :key="virtualRow.key"
+                  :data-index="virtualRow.index"
+                  :ref="(el) => gridVirtualizer.measureElement(el)"
+                  class="absolute top-0 left-0 w-full"
+                  :style="{ transform: `translateY(${virtualRow.start - gridScrollMargin}px)` }"
+                >
+                  <div class="pt-3 pb-4 sm:pb-6 grid grid-cols-2 lg:grid-cols-3 gap-x-2 gap-y-8 sm:gap-x-4 md:gap-x-8 md:gap-y-10 grid-flow-row-dense lg:space-x-0 xl:grid-cols-3">
+                    <div
+                      v-for="diamond in chunkedFilteredList[virtualRow.index].data"
+                      :key="`${diamond.sku ?? virtualRow.index}_parent_grid`"
+                      class="h-full"
+                      :ref="`gridCard_${diamond.sku}`"
+                    >
+                      <DiamondGridCardMobile
+                        :key="`${diamond.sku ?? virtualRow.index}_mobile_grid`"
+                        :diamond="diamond"
+                        :nav="navRoute"
+                        v-if="isMobile"
+                      />
+                      <DiamondGridCard
+                        :key="`${diamond.sku ?? virtualRow.index}_desktop_grid`"
+                        :diamond="diamond"
+                        :nav="navRoute"
+                        v-else
+                      />
                     </div>
-                  </DynamicScrollerItem>
-                </template>
-              </DynamicScroller>
+                  </div>
+                </div>
+              </div>
 
               <!-- ── List view ─────────────────────────────────────────────── -->
               <div role="list" aria-label="Diamond search results" v-if="viewMode === 'list'">
@@ -529,6 +528,7 @@ import { attributeCodes } from "~/utils/searchConstant";
 import { scrollToRow } from '~/utils/virtualScroll.js';
 import "vue-virtual-scroller/dist/vue-virtual-scroller.css";
 import { DynamicScroller, DynamicScrollerItem } from "vue-virtual-scroller";
+import { useWindowVirtualizer } from '@tanstack/vue-virtual';
 import { diamondFilters, diamondSortingOptions } from '@/static/js/recommendedFilters';
 import DiamondGridCard from '~/components/common/DiamondGridCard.vue';
 import SearchBanner from "~/components/common/SearchBanner.vue";
@@ -606,7 +606,8 @@ let observer = null;
 
 const root = ref(null);
 const productContainer = ref(null);
-const dynamicScroller = ref(null);
+const gridContainer = ref(null);
+const gridScrollMargin = ref(0);
 const dynamicScrollerList = ref(null);
 const infiniteTrigger = ref(null);
 const tooltipClose = ref(null);
@@ -650,6 +651,25 @@ const chunkedFilteredList = computed(() => {
   }
 
   return result;
+});
+
+// Grid rows are virtualized on the window; scrollMargin is the grid's distance from the top of the document.
+const updateGridScrollMargin = () => {
+  if (!gridContainer.value) return;
+  gridScrollMargin.value = gridContainer.value.getBoundingClientRect().top + window.scrollY;
+};
+const gridVirtualizer = useWindowVirtualizer(computed(() => ({
+  count: chunkedFilteredList.value.length,
+  estimateSize: () => 420,
+  overscan: Math.ceil(gridBuffer.value / 420),
+  scrollMargin: gridScrollMargin.value,
+  getItemKey: (index) => chunkedFilteredList.value[index]?.id ?? index,
+})));
+const gridVirtualRows = computed(() => gridVirtualizer.value.getVirtualItems());
+watch(() => [filteredList.value?.length, viewMode.value, isFilterShow.value, loader.value], () => nextTick(updateGridScrollMargin), { flush: 'post' });
+watch(gridVirtualRows, (rows) => {
+  if (viewMode.value !== 'grid' || !rows.length) return;
+  onScrollerUpdate(0, 0, rows[0].index, rows[rows.length - 1].index);
 });
 const getOriginCode = computed(() => route.fullPath?.includes(attributeCodes.labGrownCode) ? attributeCodes.labGrownCode : attributeCodes.naturalCode);
 const appliedFilterJson = computed(() => {
@@ -1479,6 +1499,11 @@ async function restoreShallow(lastPage, limitArg, scrollY, productUrlKey) {
     fetchDiamonds(); // fallback
   }
 }
+// Measured row heights can shift after the first jump, so scroll again once they settle.
+function scrollGridToRow(rowIndex) {
+  gridVirtualizer.value.scrollToIndex(rowIndex, { align: 'start' });
+  setTimeout(() => gridVirtualizer.value.scrollToIndex(rowIndex, { align: 'start' }), 250);
+}
 function finishRestoration(scrollY, productUrlKey) {
   nextTick(() => {
     setTimeout(() => {
@@ -1488,7 +1513,6 @@ function finishRestoration(scrollY, productUrlKey) {
         rowIndex = chunkedFilteredList.value.findIndex(row =>
           row.data.some(item => item.url_key === productUrlKey)
         )
-        scrollItem = dynamicScroller.value;
       } else {
         rowIndex = filteredList.value.findIndex(row =>
           row.url_key === productUrlKey
@@ -1508,7 +1532,11 @@ function finishRestoration(scrollY, productUrlKey) {
 
       if (rowIndex !== -1) {
         nextTick(() => {
-          scrollToRow(scrollItem, rowIndex)
+          if (viewMode.value === 'grid') {
+            scrollGridToRow(rowIndex)
+          } else {
+            scrollToRow(scrollItem, rowIndex)
+          }
         })
       }
 

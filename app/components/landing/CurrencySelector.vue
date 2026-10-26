@@ -29,7 +29,7 @@
             v-if="open"
             :active="true"
             :escape-deactivates="false"
-            :initial-focus="() => searchInput"
+            :initial-focus="() => searchInput || undefined"
             :fallback-focus="() => popover"
             @deactivate="closePopover"
         >

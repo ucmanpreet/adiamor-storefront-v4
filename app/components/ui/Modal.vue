@@ -16,7 +16,7 @@
 
 			<!-- Modal Content — escapeDeactivates:false so FocusTrap never closes modal on Esc;
 			     outer div @keydown.esc does it, but only when dropdown stopPropagation hasn't consumed the event -->
-			<FocusTrap :active="true" :initial-focus="() => modalHeadingEl || modalContent" :fallback-focus="() => modalContent" @deactivate="closeModal" :escape-deactivates="false">
+			<FocusTrap :active="true" :initial-focus="() => modalHeadingEl || modalContent || undefined" :fallback-focus="() => modalContent || undefined" @deactivate="closeModal" :escape-deactivates="false">
 			<div
 				:class="[
 					'relative transform overflow-hidden w-full bg-white text-left shadow-xl transition-all sm:my-8',

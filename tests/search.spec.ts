@@ -8,8 +8,9 @@ const gtm = (page: Page) => page.evaluate(() => (window as any).dataLayer.filter
 test('diamond search: list/grid scrollers render, update events fire, GTM view_item_list grows on scroll', async ({ page }) => {
   const errors: string[] = []
   page.on('pageerror', (e) => errors.push(e.message))
+  await page.route('**/*klaviyo*', (r) => r.abort())
   await page.goto('/diamonds/search/round/')
-  await page.waitForFunction(() => document.querySelectorAll('.vue-recycle-scroller__item-view').length > 0, null, { timeout: 30000 })
+  await page.waitForFunction(() => document.querySelectorAll('[data-index]').length > 0, null, { timeout: 30000 })
   await page.waitForTimeout(1500)
   const first = await rows(page)
   console.log('S1 first rows', JSON.stringify(first.slice(0, 5)), 'count', first.length)
@@ -21,12 +22,14 @@ test('diamond search: list/grid scrollers render, update events fire, GTM view_i
   console.log('S1 gtm view_item_list', g0, '->', g1, 'rows after scroll', scrolled.length, 'min index', Math.min(...scrolled.map((r) => r.i)))
   expect(g1).toBeGreaterThan(g0)
   expect(Math.min(...scrolled.map((r) => r.i))).toBeGreaterThan(0)
-  expect(errors.filter((e) => !/Yotpo|yotpo|querySelector/.test(e))).toEqual([])
+  // klaviyo: a GTM tag calls klaviyo.identify() while the blocked Klaviyo SDK is absent; GTM re-throws it as "Uncaught [object Object]"
+  expect(errors.filter((e) => !/Yotpo|yotpo|querySelector|klaviyo\.identify|Uncaught \[object Object\]/.test(e))).toEqual([])
 })
 
 test('diamond search: keyboard order of rows after load is DOM-ordered', async ({ page }) => {
+  await page.route('**/*klaviyo*', (r) => r.abort())
   await page.goto('/diamonds/search/round/')
-  await page.waitForFunction(() => document.querySelectorAll('.vue-recycle-scroller__item-view').length > 0, null, { timeout: 30000 })
+  await page.waitForFunction(() => document.querySelectorAll('[data-index]').length > 0, null, { timeout: 30000 })
   const orders: number[][] = []
   for (let i = 0; i < 12; i++) {
     orders.push(await page.evaluate(() => [...document.querySelectorAll('[data-index]')].filter((e: any) => getComputedStyle(e.closest('.vue-recycle-scroller__item-view') || e).visibility !== 'hidden').map((e: any) => +e.dataset.index)))
@@ -38,7 +41,7 @@ test('diamond search: keyboard order of rows after load is DOM-ordered', async (
 
 test('settings search: grid renders and restores via scrollToRow helper', async ({ page }) => {
   await page.goto('/engagement-rings/search/')
-  await page.waitForFunction(() => document.querySelectorAll('.vue-recycle-scroller__item-view').length > 0, null, { timeout: 30000 })
+  await page.waitForFunction(() => document.querySelectorAll('[data-index]').length > 0, null, { timeout: 30000 })
   await page.waitForTimeout(1200)
   const r = await rows(page)
   console.log('S3 setting rows', r.length, JSON.stringify(r.slice(0, 3)))
