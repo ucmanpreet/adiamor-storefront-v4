@@ -1,0 +1,64 @@
+User-agent: *
+
+# ---------------------------------------------------
+# 1. Core Nuxt & Bagisto System Blocks
+# ---------------------------------------------------
+Disallow: /cart/
+Disallow: /auth/
+Disallow: /my-account
+Disallow: /view-order/
+Disallow: /wishlist
+Disallow: /thankyou
+Disallow: /newsletter
+Disallow: /refer-a-friend
+Disallow: /auth/reset-password/
+
+# ---------------------------------------------------
+# 2. Block "Utility" Search
+# ---------------------------------------------------
+Disallow: /custom-search
+Disallow: /keyword
+
+# ---------------------------------------------------
+# 3. Block Legacy & Cart-Action URLs
+# ---------------------------------------------------
+Disallow: /diamond/add/
+Disallow: /YourRing.aspx
+Disallow: /yourring.aspx
+
+# ---------------------------------------------------
+# 4. Block GTM / Tracking Paths
+# ---------------------------------------------------
+Disallow: /gtmx/
+
+# 5. Block Spam & Legacy Junk Paths
+# ---------------------------------------------------
+Disallow: /query/
+Disallow: /home/DetailRedirect
+Disallow: /pdfview/
+Disallow: /Diamond/ImageRequest
+Disallow: /CompleteRing.aspx
+
+# ---------------------------------------------------
+# 6. Allow Assets
+# ---------------------------------------------------
+Allow: /_nuxt/
+Allow: /assets/
+Allow: /images/
+
+# ---------------------------------------------------
+# 7. Aggressive Bot Throttling
+# ---------------------------------------------------
+User-agent: Bytespider
+Crawl-delay: 10
+
+User-agent: FacebookExternalHit
+Crawl-delay: 10
+
+User-agent: meta-externalagent
+Crawl-delay: 10
+
+# ---------------------------------------------------
+# 8. Sitemap
+# ---------------------------------------------------
+Sitemap: https://adiamor.com/sitemap.xml

@@ -1,0 +1,105 @@
+<template>
+    <div>
+        <SearchHeader />
+        <BundleSteps :key="$route.path" />
+        <div class="flex items-center justify-center mt-4 mb-6 sm:mt-6 sm:mb-8 max-w-xs mx-auto text-sm sm:text-base bg-gray-100 rounded-full border border-gray-200"
+            v-show="isDiamondFilter" role="group"
+            aria-label="Diamond origin selection"
+        >
+            <Button type="button" @click="redirectTo('natural')" class="rounded-full flex-1"
+                :aria-pressed="getOriginCode === 'natural'"
+                :colorType="getOriginCode == 'natural' ? 'primary' : 'transparent'">
+                Natural
+            </Button>
+
+            <Button type="button" @click="redirectTo('lab-grown')" class="rounded-full flex-1"
+                :aria-pressed="getOriginCode === 'lab-grown'"
+                :colorType="getOriginCode == 'lab-grown' ? 'primary' : 'transparent'">
+                Lab Grown
+            </Button>
+        </div>
+
+        <nav
+            v-if="getTopPanelFilters"
+            aria-label="Filter options"
+        >
+            <!-- Mobile Top panel Filters -->
+            <IconFilter :filter="getTopPanelFilters" v-if="getTopPanelFilters" :key="`${iconfilterComponent}_mobile`"
+                className="flex lg:justify-start xl:justify-between gap-2.5 py-1 px-3 lg:hidden overflow-x-auto no-scrollbar" />
+        </nav>
+
+        <span class="sr-only" aria-live="polite">
+            {{ getOriginCode === 'natural'
+                ? 'Natural diamonds selected'
+                : 'Lab grown diamonds selected' }}
+        </span>
+    </div>
+</template>
+<script>
+import SearchHeader from '~/components/layout/search/index.vue';
+import BundleSteps from '~/components/ui/BundleSteps.vue';
+import Button from '~/components/common/Button.vue';
+import IconFilter from '~/components/filter/IconFilter.vue';
+import { topPanelFilter } from '@/static/js/recommendedFilters';
+import { attributeCodes } from '~/utils/searchConstant';
+import { cleanPostfix } from '~/utils/universalHelper';
+
+export default {
+    name: 'SearchBanner',
+    components: {
+        SearchHeader,
+        BundleSteps,
+        Button, 
+        IconFilter
+    },
+    props: {
+        filterList: {
+            type: Object,
+            default: () => ({}),
+        },
+        originCode: {
+            type: String,
+            default: '',
+        }
+    },
+    data() {
+        return {
+            iconfilterComponent: 0
+        }
+    },
+    computed: {
+        isDiamondFilter() {
+			return this.$route.params?.prefix === 'diamonds';
+		},
+        getTopPanelFilters() {
+            if (this.$isMobile) {
+                return Object.values(this.filterList).find((filter) => topPanelFilter?.includes(filter.code));
+            }
+            return null;
+        },
+        getOriginCode() {
+            return this.originCode;
+        },
+        isOnlyDiamondFilter() {
+		  return this.$route.params?.prefix === 'diamonds' && cleanPostfix(this.$route.params?.postfix) != 'diamond-pair';
+		},
+    },
+    methods: {
+        async redirectTo(code) {
+            if (this.isOnlyDiamondFilter) {
+                await this.$router.replace(`/diamonds/search/${code}`);
+                return;
+            }
+            const updatedQuery = { ...this.$route.query, [attributeCodes.diamondOriginCode]: code };
+            try {
+                await this.$router.replace({ query: updatedQuery });
+            } catch (err) {
+                console.error('Navigation error:', err);
+            }
+        },
+    },
+    mounted() {
+        this.iconfilterComponent++;
+    }
+}
+</script>

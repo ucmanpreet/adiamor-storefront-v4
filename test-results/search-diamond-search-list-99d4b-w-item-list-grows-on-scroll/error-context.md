@@ -1,0 +1,778 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: search.spec.ts >> diamond search: list/grid scrollers render, update events fire, GTM view_item_list grows on scroll
+- Location: tests/search.spec.ts:8:1
+
+# Error details
+
+```
+TimeoutError: page.waitForFunction: Timeout 30000ms exceeded.
+```
+
+# Page snapshot
+
+```yaml
+- generic [ref=f11e1]:
+  - generic [ref=f11e3]:
+    - link "Skip to content":
+      - /url: "#main-content"
+      - text: Skip to content
+      - generic [aria-hidden]:
+        - generic: ↵
+        - text: ENTER
+    - banner [ref=f11e5]:
+      - generic [ref=f11e7]:
+        - generic [ref=f11e8]:
+          - link "Free shipping and easy return" [ref=f11e9] [cursor=pointer]:
+            - /url: /policies/return-policy/
+            - generic [aria-hidden] [ref=f11e10]: ✦
+            - text: Free Shipping & Easy Returns
+          - generic [aria-hidden] [ref=f11e11]: "|"
+          - link "Lab Grown diamonds on sale" [ref=f11e12] [cursor=pointer]:
+            - /url: /promotions/
+            - generic [aria-hidden] [ref=f11e13]: ◈
+            - text: Lab Grown Diamonds on Sale
+        - button "Change your shipping country and currency" [ref=f11e15] [cursor=pointer]:
+          - generic [ref=f11e22]: USD
+      - generic [ref=f11e26]:
+        - generic [ref=f11e28]:
+          - list [ref=f11e29]:
+            - listitem [ref=f11e30]:
+              - link "Contact Adiamor at 877-627-5094" [ref=f11e31] [cursor=pointer]:
+                - /url: /contact-adiamor/
+                - text: 877-627-5094
+            - listitem [ref=f11e32]:
+              - button "Open help desk" [ref=f11e35] [cursor=pointer]
+            - listitem [ref=f11e39]:
+              - link "Send email to support" [ref=f11e42] [cursor=pointer]:
+                - /url: mailto:Service@Adiamor.com
+          - list [ref=f11e46]:
+            - listitem:
+              - button "Open search" [ref=f11e47] [cursor=pointer]
+            - listitem [ref=f11e53]:
+              - button "Wishlist, 0 items" [ref=f11e56] [cursor=pointer]
+            - listitem [ref=f11e62]:
+              - button "Shopping cart, 0 items" [ref=f11e65] [cursor=pointer]
+            - listitem [ref=f11e71]:
+              - link "Login" [ref=f11e73] [cursor=pointer]:
+                - /url: /auth/login/
+        - generic [ref=f11e81]:
+          - link "Adiamor home" [ref=f11e82] [cursor=pointer]:
+            - /url: /
+          - navigation "Global navigation" [ref=f11e92]:
+            - generic [ref=f11e93]:
+              - link "Diamonds" [ref=f11e95] [cursor=pointer]:
+                - /url: /diamonds/
+              - link "Engagement Rings" [ref=f11e97] [cursor=pointer]:
+                - /url: /engagement-rings/
+              - link "Wedding" [ref=f11e99] [cursor=pointer]:
+                - /url: /wedding-rings/
+              - link "Jewelry" [ref=f11e101] [cursor=pointer]:
+                - /url: /jewelry/
+              - link "Education" [ref=f11e103] [cursor=pointer]:
+                - /url: /education/
+              - link "About Us" [ref=f11e105] [cursor=pointer]:
+                - /url: /about-adiamor/
+              - link "On Sale" [ref=f11e107] [cursor=pointer]:
+                - /url: /jewelry/search/sale/
+    - main [ref=f11e108]:
+      - generic [ref=f11e109]:
+        - generic [ref=f11e110]:
+          - link "Design your perfect Engagement Ring" [ref=f11e111] [cursor=pointer]:
+            - /url: /engagement-rings/search/
+          - img "Design your perfect Engagement Ring" [ref=f11e113]
+          - generic [ref=f11e115]:
+            - heading "Design your perfect Engagement Ring" [level=1] [ref=f11e116]:
+              - generic [ref=f11e117]: Design your perfect
+              - generic [ref=f11e118]: Engagement Ring
+            - paragraph [ref=f11e119]: Made in Los Angeles · Free Shipping · 30-day Returns
+            - generic [ref=f11e120]:
+              - link "Engagement Rings" [ref=f11e121] [cursor=pointer]:
+                - /url: /engagement-rings/search/
+              - link "Loose Diamonds" [ref=f11e122] [cursor=pointer]:
+                - /url: /diamonds/search/
+        - region [ref=f11e123]:
+          - generic [ref=f11e124]:
+            - generic [ref=f11e125]:
+              - heading "As Featured in" [level=2] [ref=f11e126]
+              - paragraph [ref=f11e127]: As seen in prominent media outlets, endorsed by top brands, and celebrated for outstanding quality globally.
+            - generic [ref=f11e128]:
+              - link "nbc" [ref=f11e130] [cursor=pointer]:
+                - /url: /in-the-media/
+                - img "nbc media feature logo" [ref=f11e132]
+              - link "this_is_la" [ref=f11e134] [cursor=pointer]:
+                - /url: /in-the-media/
+                - img "this_is_la media feature logo" [ref=f11e136]
+              - link "weddingwire" [ref=f11e138] [cursor=pointer]:
+                - /url: /in-the-media/
+                - img "weddingwire media feature logo" [ref=f11e140]
+              - link "the_knot" [ref=f11e142] [cursor=pointer]:
+                - /url: /in-the-media/
+                - img "the_knot media feature logo" [ref=f11e144]
+              - link "telemundo" [ref=f11e146] [cursor=pointer]:
+                - /url: /in-the-media/
+                - img "telemundo media feature logo" [ref=f11e148]
+              - link "buzzfeed" [ref=f11e150] [cursor=pointer]:
+                - /url: /in-the-media/
+                - img "buzzfeed media feature logo" [ref=f11e152]
+        - region [ref=f11e153]:
+          - generic [ref=f11e154]:
+            - heading "Explore Our Collections" [level=2] [ref=f11e155]
+            - paragraph [ref=f11e156]: Find timeless wedding rings and bands for every style — from elegant solitaires to matching sets and diamond accents.
+          - list [ref=f11e157]:
+            - listitem [ref=f11e158]:
+              - generic [ref=f11e159]:
+                - link "Engagement Rings" [ref=f11e160] [cursor=pointer]:
+                  - /url: /engagement-rings/
+                - generic [ref=f11e163]:
+                  - heading [level=2] [aria-hidden] [ref=f11e164]: Engagement Rings
+                  - link [aria-hidden] [ref=f11e166] [cursor=pointer]:
+                    - /url: /engagement-rings/
+                    - text: Shop Now
+            - listitem [ref=f11e167]:
+              - generic [ref=f11e168]:
+                - link "Wedding Rings" [ref=f11e169] [cursor=pointer]:
+                  - /url: /wedding-rings/
+                - generic [ref=f11e172]:
+                  - heading [level=2] [aria-hidden] [ref=f11e173]: Wedding Rings
+                  - link [aria-hidden] [ref=f11e175] [cursor=pointer]:
+                    - /url: /wedding-rings/
+                    - text: Shop Now
+            - listitem [ref=f11e176]:
+              - generic [ref=f11e177]:
+                - link "Diamond Earrings" [ref=f11e178] [cursor=pointer]:
+                  - /url: /earrings/
+                - generic [ref=f11e181]:
+                  - heading [level=2] [aria-hidden] [ref=f11e182]: Diamond Earrings
+                  - link [aria-hidden] [ref=f11e184] [cursor=pointer]:
+                    - /url: /earrings/
+                    - text: Shop Now
+            - listitem [ref=f11e185]:
+              - generic [ref=f11e186]:
+                - link "Diamond Pendants" [ref=f11e187] [cursor=pointer]:
+                  - /url: /necklaces/
+                - generic [ref=f11e190]:
+                  - heading [level=2] [aria-hidden] [ref=f11e191]: Diamond Pendants
+                  - link [aria-hidden] [ref=f11e193] [cursor=pointer]:
+                    - /url: /necklaces/
+                    - text: Shop Now
+        - generic [ref=f11e196]:
+          - generic [ref=f11e198]:
+            - heading "Shop By Diamond Shapes" [level=2] [ref=f11e199]
+            - paragraph [ref=f11e200]: Explore our exquisite collection of diamonds categorized by shape to find your perfect gem.
+          - list [ref=f11e201]:
+            - listitem [ref=f11e202]:
+              - link "Shop Round diamond shape" [ref=f11e203] [cursor=pointer]:
+                - /url: /diamonds/search/round/
+                - generic [ref=f11e215]: Round
+            - listitem [ref=f11e216]:
+              - link "Shop Princess diamond shape" [ref=f11e217] [cursor=pointer]:
+                - /url: /diamonds/search/princess/
+                - generic [ref=f11e223]: Princess
+            - listitem [ref=f11e224]:
+              - link "Shop Emerald diamond shape" [ref=f11e225] [cursor=pointer]:
+                - /url: /diamonds/search/emerald/
+                - generic [ref=f11e233]: Emerald
+            - listitem [ref=f11e234]:
+              - link "Shop Marquise diamond shape" [ref=f11e235] [cursor=pointer]:
+                - /url: /diamonds/search/marquise/
+                - generic [ref=f11e244]: Marquise
+            - listitem [ref=f11e245]:
+              - link "Shop Heart diamond shape" [ref=f11e246] [cursor=pointer]:
+                - /url: /diamonds/search/heart/
+                - generic [ref=f11e255]: Heart
+            - listitem [ref=f11e256]:
+              - link "Shop Pear diamond shape" [ref=f11e257] [cursor=pointer]:
+                - /url: /diamonds/search/pear/
+                - generic [ref=f11e266]: Pear
+            - listitem [ref=f11e267]:
+              - link "Shop Cushion diamond shape" [ref=f11e268] [cursor=pointer]:
+                - /url: /diamonds/search/cushion/
+                - generic [ref=f11e279]: Cushion
+            - listitem [ref=f11e280]:
+              - link "Shop Oval diamond shape" [ref=f11e281] [cursor=pointer]:
+                - /url: /diamonds/search/oval/
+                - generic [ref=f11e286]: Oval
+            - listitem [ref=f11e287]:
+              - link "Shop Radiant diamond shape" [ref=f11e288] [cursor=pointer]:
+                - /url: /diamonds/search/radiant/
+                - generic [ref=f11e299]: Radiant
+            - listitem [ref=f11e300]:
+              - link "Shop Asscher diamond shape" [ref=f11e301] [cursor=pointer]:
+                - /url: /diamonds/search/asscher/
+                - generic [ref=f11e309]: Asscher
+        - region [ref=f11e310]:
+          - generic [ref=f11e314]:
+            - heading [level=2] [ref=f11e315]:
+              - text: You
+              - strong [ref=f11e316]: Design
+              - text: It, We
+              - strong [ref=f11e317]: Build
+              - text: It
+            - paragraph [ref=f11e318]: Make it your own. Each ring is a one of a kind masterpiece made for you in our Los Angeles manufacturing house.
+            - link "Design your own custom engagement ring" [ref=f11e319] [cursor=pointer]:
+              - /url: /design-your-own/ring/
+              - text: Design Your Own Ring
+        - region [ref=f11e321]:
+          - generic [ref=f11e322]:
+            - generic [ref=f11e323]:
+              - heading "Photos From Our Community" [level=2] [ref=f11e326]
+              - paragraph [ref=f11e327]: Community photo gallery is loading.
+              - group "Customer community photo gallery" [ref=f11e328]:
+                - generic:
+                  - text:                                                                                                                                                                    
+                  - generic:    
+                - generic [ref=f11e330]:
+                  - generic [ref=f11e331]:
+                    - 'heading "Upload your photo or tag us at #Adiamor to be featured in our gallery!" [level=2] [ref=f11e333]'
+                    - button "Add your own image. Click on the button to upload an image and fill in the required details on the pop-up" [ref=f11e335] [cursor=pointer]:
+                      - generic [ref=f11e336]: 
+                      - text: Add Your Photos
+                    - generic [ref=f11e337]:
+                      - generic:               
+                      - generic:  
+                  - list:
+                    - listitem "Photos from shoppers" [ref=f11e338]:
+                      - button "View product details and customer reviews for https://adiamor.com/, photo" [ref=f11e339] [cursor=pointer]
+                    - listitem "Photos from shoppers" [ref=f11e343]:
+                      - button "View Instagram shopper photo" [ref=f11e344] [cursor=pointer]
+                    - listitem "Photos from shoppers" [ref=f11e348]:
+                      - button "View Instagram shopper photo" [ref=f11e349] [cursor=pointer]
+                    - listitem "Photos from shoppers" [ref=f11e353]:
+                      - button "View Instagram shopper photo" [ref=f11e354] [cursor=pointer]
+                    - listitem "Photos from shoppers" [ref=f11e358]:
+                      - button "View Instagram shopper photo" [ref=f11e359] [cursor=pointer]
+                    - listitem "Photos from shoppers" [ref=f11e363]:
+                      - button "View Instagram shopper photo" [ref=f11e364] [cursor=pointer]
+                    - listitem "Photos from shoppers" [ref=f11e368]:
+                      - button "View product details and customer reviews for Bezel Set Solitaire Engagement Ring Setting, photo" [ref=f11e369] [cursor=pointer]
+                    - listitem "Photos from shoppers" [ref=f11e373]:
+                      - button "View product details and customer reviews for Bezel Set Solitaire Engagement Ring Setting, photo" [ref=f11e374] [cursor=pointer]
+                    - listitem "Photos from shoppers" [ref=f11e378]:
+                      - button "View product details and customer reviews for Marquise Round Diamond Engagement Ring Setting, photo" [ref=f11e379] [cursor=pointer]
+                    - listitem "Photos from shoppers" [ref=f11e383]:
+                      - button "View product details and customer reviews for Marquise Round Diamond Engagement Ring Setting, photo" [ref=f11e384] [cursor=pointer]
+                    - listitem "Photos from shoppers" [ref=f11e388]:
+                      - button "View product details and customer reviews for French Cut 3/4 way Diamond Wedding Band 1.5mm, photo" [ref=f11e389] [cursor=pointer]
+                    - listitem "Photos from shoppers" [ref=f11e393]:
+                      - button "View product details and customer reviews for French Cut 3/4 way Diamond Wedding Band 1.5mm, photo" [ref=f11e394] [cursor=pointer]
+                    - listitem "Photos from shoppers" [ref=f11e398]:
+                      - button "View preview gallery photo" [ref=f11e399] [cursor=pointer]
+                    - listitem "Photos from shoppers" [ref=f11e403]:
+                      - button "View preview gallery photo" [ref=f11e404] [cursor=pointer]
+                    - listitem "Photos from shoppers" [ref=f11e408]:
+                      - button "View preview gallery photo" [ref=f11e409] [cursor=pointer]:
+                        - generic [ref=f11e411]: 
+                    - listitem "Photos from shoppers" [ref=f11e413]:
+                      - 'button "View product details and customer reviews for Large French Cut Diamond Engagement Setting in 18K White Gold, Center: Unset, photo" [ref=f11e414] [cursor=pointer]'
+                    - listitem "Photos from shoppers" [ref=f11e418]:
+                      - button "View preview gallery photo" [ref=f11e419] [cursor=pointer]
+                    - listitem "Photos from shoppers" [ref=f11e423]:
+                      - button "View preview gallery photo" [ref=f11e424] [cursor=pointer]
+            - link "View more community photos and social media gallery" [ref=f11e429] [cursor=pointer]:
+              - /url: /social-media-gallery/
+              - text: View More
+        - generic [ref=f11e430]:
+          - article [ref=f11e431]:
+            - generic [ref=f11e432]:
+              - heading [level=2] [ref=f11e433]:
+                - link "Open diamond certification education page" [ref=f11e434] [cursor=pointer]:
+                  - /url: /education/diamond-certification/
+                  - text: Certification
+              - paragraph [ref=f11e435]: Adiamor diamonds are graded by the two most reputable laboratories in the industry, GIA and IGI
+            - generic [ref=f11e436]:
+              - link "Visit GIA certification website" [ref=f11e437] [cursor=pointer]:
+                - /url: https://www.gia.edu/
+                - img "GIA diamond certification logo" [ref=f11e438]
+              - link "Visit IGI certification website" [ref=f11e439] [cursor=pointer]:
+                - /url: https://www.igi.org/
+                - img "IGI diamond certification logo" [ref=f11e440]
+          - article [ref=f11e441]:
+            - generic [ref=f11e442]:
+              - heading "Diamond Education" [level=2] [ref=f11e443]
+              - paragraph [ref=f11e444]: "Learn about the “4 C’s” to help you with your online diamond shopping:"
+            - navigation "Diamond education topics" [ref=f11e445]:
+              - link "Diamond Cut" [ref=f11e446] [cursor=pointer]:
+                - /url: /education/diamond-cut/
+              - link "Diamond Color" [ref=f11e451] [cursor=pointer]:
+                - /url: /education/diamond-color/
+              - link "Diamond Clarity" [ref=f11e456] [cursor=pointer]:
+                - /url: /education/diamond-clarity/
+              - link "Carat Weight" [ref=f11e461] [cursor=pointer]:
+                - /url: /education/carat-weight/
+        - region [ref=f11e466]:
+          - heading "Testimonials" [level=2] [ref=f11e467]
+          - generic [ref=f11e468]:
+            - link "Read customer testimonials" [ref=f11e470] [cursor=pointer]:
+              - /url: /testimonials/
+              - img "Customer testimonials image" [ref=f11e471]
+            - generic "Customer review carousel" [ref=f11e473]:
+              - group "Testimonials" [ref=f11e481]:
+                - list [ref=f11e483]:
+                  - listitem [aria-hidden] [ref=f11e484]:
+                    - group [ref=f11e485]:
+                      - generic [ref=f11e486]:
+                        - generic [ref=f11e488]:
+                          - generic [ref=f11e489]:
+                            - generic [ref=f11e490]: Mary W.
+                            - generic [ref=f11e491]: Verified Buyer
+                          - generic [ref=f11e496]: 08/22/26
+                        - heading [level=3] [ref=f11e516]: Pear shaped diamond pendant
+                        - paragraph [ref=f11e518]:
+                          - text: My daughter was absolutely thrilled with her beautiful pendant. The diamond is stunning!! The 16 inch chain is to tight, hopefully she can exchange the chain. I love Adiamor. I...
+                          - button [ref=f11e519] [cursor=pointer]: Read more
+                  - listitem [aria-hidden] [ref=f11e520]:
+                    - group [ref=f11e521]:
+                      - generic [ref=f11e522]:
+                        - generic [ref=f11e524]:
+                          - generic [ref=f11e525]:
+                            - generic [ref=f11e526]: Jennifer H.
+                            - generic [ref=f11e527]: Verified Buyer
+                          - generic [ref=f11e532]: 08/20/26
+                        - heading [level=3] [ref=f11e552]: Bead stretch bracelet
+                        - paragraph [ref=f11e554]: This was a gift. Excellent customer service. Very efficient delivery.
+                  - listitem [aria-hidden] [ref=f11e555]:
+                    - group [ref=f11e556]:
+                      - generic [ref=f11e557]:
+                        - generic [ref=f11e559]:
+                          - generic [ref=f11e560]:
+                            - generic [ref=f11e561]: Giuseppe S.
+                            - generic [ref=f11e562]: Verified Buyer
+                          - generic [ref=f11e567]: 08/18/26
+                        - heading [level=3] [ref=f11e587]: everyone is happy with the
+                        - paragraph [ref=f11e589]:
+                          - text: everyone is happy with the purchase, thank you Adiamor for everything. All went well, there were no issues, except for a delay in in clearing the product from our local customs....
+                          - button [ref=f11e590] [cursor=pointer]: Read more
+                  - listitem [aria-hidden] [ref=f11e591]:
+                    - group [ref=f11e592]:
+                      - generic [ref=f11e593]:
+                        - generic [ref=f11e595]:
+                          - generic [ref=f11e596]:
+                            - generic [ref=f11e597]: Craig M.
+                            - generic [ref=f11e598]: Verified Buyer
+                          - generic [ref=f11e603]: 10/19/26
+                        - heading [level=3] [ref=f11e623]: Great Ring and Service
+                        - paragraph [ref=f11e625]: Going to pick up the wedding band from here too we are so happy with it,
+                  - listitem [aria-hidden] [ref=f11e626]:
+                    - group [ref=f11e627]:
+                      - generic [ref=f11e628]:
+                        - generic [ref=f11e630]:
+                          - generic [ref=f11e631]:
+                            - generic [ref=f11e632]: Katia g.
+                            - generic [ref=f11e633]: Verified Buyer
+                          - generic [ref=f11e638]: 09/20/26
+                        - heading [level=3] [ref=f11e658]: Beautiful!
+                        - paragraph [ref=f11e660]: I had a great experience buying from Adiamor, the ring is better than expected, astonishing diamond, and costumer service was great and efficient. Totally recommended!
+                  - listitem [aria-hidden] [ref=f11e661]:
+                    - group [ref=f11e662]:
+                      - generic [ref=f11e663]:
+                        - generic [ref=f11e665]:
+                          - generic [ref=f11e666]:
+                            - generic [ref=f11e667]: James H.
+                            - generic [ref=f11e668]: Verified Buyer
+                          - generic [ref=f11e673]: 09/19/26
+                        - heading [level=3] [ref=f11e693]: Excellent ring, has held up well
+                        - paragraph [ref=f11e695]: Beautiful, just as shown in the pictures, and the price couldn't be beat!
+                  - listitem [aria-hidden] [ref=f11e696]:
+                    - group [ref=f11e697]:
+                      - generic [ref=f11e698]:
+                        - generic [ref=f11e700]:
+                          - generic [ref=f11e701]:
+                            - generic [ref=f11e702]: Joyce O.
+                            - generic [ref=f11e703]: Verified Buyer
+                          - generic [ref=f11e708]: 08/31/26
+                        - heading [level=3] [ref=f11e728]: Exquisite Setting
+                        - paragraph [ref=f11e730]:
+                          - text: I love the 18k gold Flat Edge Cathedral setting that I chose for my 4. 48 carat cushion-cut diamond. The setting is beautiful but doesn't overwhelm my gorgeous diamond. I wanted...
+                          - button [ref=f11e731] [cursor=pointer]: Read more
+                  - listitem "slide 5 out of 12" [ref=f11e732]:
+                    - group [ref=f11e733]:
+                      - generic [ref=f11e734]:
+                        - generic [ref=f11e736]:
+                          - generic [ref=f11e737]:
+                            - generic [ref=f11e738]: Byron F.
+                            - generic [ref=f11e739]: Verified Buyer
+                          - generic [ref=f11e744]: 08/31/26
+                        - img "5.0 out of 5 stars" [ref=f11e748]
+                        - heading "Set looks beautiful!" [level=3] [ref=f11e764]
+                        - paragraph [ref=f11e766]: I worked both with customer service over the phone and online in both were amazing!
+                  - listitem [aria-hidden] [ref=f11e767]:
+                    - group [ref=f11e768]:
+                      - generic [ref=f11e769]:
+                        - generic [ref=f11e771]:
+                          - generic [ref=f11e772]:
+                            - generic [ref=f11e773]: Ryan G.
+                            - generic [ref=f11e774]: Verified Buyer
+                          - generic [ref=f11e779]: 08/29/26
+                        - heading [level=3] [ref=f11e799]: THE BEST EXPERIENCE EVER! Made
+                        - paragraph [ref=f11e801]:
+                          - text: THE BEST EXPERIENCE EVER! Made my life so much easier. My now fiancé loves the ring and has received so many great compliments! Ring looks phenomenal and the customer service was...
+                          - button [ref=f11e802] [cursor=pointer]: Read more
+                  - listitem [aria-hidden] [ref=f11e803]:
+                    - group [ref=f11e804]:
+                      - generic [ref=f11e805]:
+                        - generic [ref=f11e807]:
+                          - generic [ref=f11e808]:
+                            - generic [ref=f11e809]: Laura B.
+                            - generic [ref=f11e810]: Verified Buyer
+                          - generic [ref=f11e815]: 08/25/26
+                        - heading [level=3] [ref=f11e835]: Engagement ring!!!
+                        - paragraph [ref=f11e837]: Love my new ringggg🤩🤩🤩🤩
+                  - listitem [aria-hidden] [ref=f11e838]:
+                    - group [ref=f11e839]:
+                      - generic [ref=f11e840]:
+                        - generic [ref=f11e842]:
+                          - generic [ref=f11e843]:
+                            - generic [ref=f11e844]: Owen F.
+                            - generic [ref=f11e845]: Verified Buyer
+                          - generic [ref=f11e850]: 08/24/26
+                        - heading [level=3] [ref=f11e870]: Great!
+                        - paragraph [ref=f11e872]: We love the ring! All of our friends and family say it's gorgeous.
+                  - listitem [aria-hidden] [ref=f11e873]:
+                    - group [ref=f11e874]:
+                      - generic [ref=f11e875]:
+                        - generic [ref=f11e877]:
+                          - generic [ref=f11e878]:
+                            - generic [ref=f11e879]: Erin L.
+                            - generic [ref=f11e880]: Verified Buyer
+                          - generic [ref=f11e885]: 08/23/26
+                        - heading [level=3] [ref=f11e905]: 4mm rose gold bead bracelet.
+                        - paragraph [ref=f11e907]:
+                          - text: I absolutely love my bracelet! It’s beautiful, elegant, I’ve already received several compliments on it. The quality is great, and I’m very happy with my purchase. I would...
+                          - button [ref=f11e908] [cursor=pointer]: Read more
+                  - listitem [aria-hidden] [ref=f11e909]:
+                    - group [ref=f11e910]:
+                      - generic [ref=f11e911]:
+                        - generic [ref=f11e913]:
+                          - generic [ref=f11e914]:
+                            - generic [ref=f11e915]: Mary W.
+                            - generic [ref=f11e916]: Verified Buyer
+                          - generic [ref=f11e921]: 08/22/26
+                        - heading [level=3] [ref=f11e941]: Pear shaped diamond pendant
+                        - paragraph [ref=f11e943]:
+                          - text: My daughter was absolutely thrilled with her beautiful pendant. The diamond is stunning!! The 16 inch chain is to tight, hopefully she can exchange the chain. I love Adiamor. I...
+                          - button [ref=f11e944] [cursor=pointer]: Read more
+                  - listitem [aria-hidden] [ref=f11e945]:
+                    - group [ref=f11e946]:
+                      - generic [ref=f11e947]:
+                        - generic [ref=f11e949]:
+                          - generic [ref=f11e950]:
+                            - generic [ref=f11e951]: Jennifer H.
+                            - generic [ref=f11e952]: Verified Buyer
+                          - generic [ref=f11e957]: 08/20/26
+                        - heading [level=3] [ref=f11e977]: Bead stretch bracelet
+                        - paragraph [ref=f11e979]: This was a gift. Excellent customer service. Very efficient delivery.
+                  - listitem [aria-hidden] [ref=f11e980]:
+                    - group [ref=f11e981]:
+                      - generic [ref=f11e982]:
+                        - generic [ref=f11e984]:
+                          - generic [ref=f11e985]:
+                            - generic [ref=f11e986]: Giuseppe S.
+                            - generic [ref=f11e987]: Verified Buyer
+                          - generic [ref=f11e992]: 08/18/26
+                        - heading [level=3] [ref=f11e1012]: everyone is happy with the
+                        - paragraph [ref=f11e1014]:
+                          - text: everyone is happy with the purchase, thank you Adiamor for everything. All went well, there were no issues, except for a delay in in clearing the product from our local customs....
+                          - button [ref=f11e1015] [cursor=pointer]: Read more
+                  - listitem [aria-hidden] [ref=f11e1016]:
+                    - group [ref=f11e1017]:
+                      - generic [ref=f11e1018]:
+                        - generic [ref=f11e1020]:
+                          - generic [ref=f11e1021]:
+                            - generic [ref=f11e1022]: Craig M.
+                            - generic [ref=f11e1023]: Verified Buyer
+                          - generic [ref=f11e1028]: 10/19/26
+                        - heading [level=3] [ref=f11e1048]: Great Ring and Service
+                        - paragraph [ref=f11e1050]: Going to pick up the wedding band from here too we are so happy with it,
+                  - listitem [aria-hidden] [ref=f11e1051]:
+                    - group [ref=f11e1052]:
+                      - generic [ref=f11e1053]:
+                        - generic [ref=f11e1055]:
+                          - generic [ref=f11e1056]:
+                            - generic [ref=f11e1057]: Katia g.
+                            - generic [ref=f11e1058]: Verified Buyer
+                          - generic [ref=f11e1063]: 09/20/26
+                        - heading [level=3] [ref=f11e1083]: Beautiful!
+                        - paragraph [ref=f11e1085]: I had a great experience buying from Adiamor, the ring is better than expected, astonishing diamond, and costumer service was great and efficient. Totally recommended!
+                  - listitem [aria-hidden] [ref=f11e1086]:
+                    - group [ref=f11e1087]:
+                      - generic [ref=f11e1088]:
+                        - generic [ref=f11e1090]:
+                          - generic [ref=f11e1091]:
+                            - generic [ref=f11e1092]: James H.
+                            - generic [ref=f11e1093]: Verified Buyer
+                          - generic [ref=f11e1098]: 09/19/26
+                        - heading [level=3] [ref=f11e1118]: Excellent ring, has held up well
+                        - paragraph [ref=f11e1120]: Beautiful, just as shown in the pictures, and the price couldn't be beat!
+                - group "slide controls":
+                  - button "previous slide" [ref=f11e1121] [cursor=pointer]:
+                    - img "left arrow" [ref=f11e1122]
+                  - button "next slide" [ref=f11e1124] [cursor=pointer]:
+                    - img "right arrow" [ref=f11e1125]
+          - link "Read more customer testimonials" [ref=f11e1127] [cursor=pointer]:
+            - /url: /testimonials/
+            - text: Read Customer Testimonials
+        - region [ref=f11e1128]:
+          - generic [ref=f11e1130]:
+            - img "Adiamor jewelry box packaging" [ref=f11e1132]
+            - link "Why Shop At Adiamor Manufacturer Direct Complimentary Appraisal Complimentary Preventive Maintenance 30-Days Return Complimentary Resizing for 90 Days Free Shipping Worldwide" [ref=f11e1133] [cursor=pointer]:
+              - /url: /why-shop-at-adiamor/
+              - generic [ref=f11e1134]:
+                - heading "Why Shop At Adiamor" [level=2] [ref=f11e1135]
+                - list [ref=f11e1136]:
+                  - listitem [ref=f11e1137]:
+                    - generic [ref=f11e1141]: Manufacturer Direct
+                  - listitem [ref=f11e1142]:
+                    - generic [ref=f11e1146]: Complimentary Appraisal
+                  - listitem [ref=f11e1147]:
+                    - generic [ref=f11e1151]: Complimentary Preventive Maintenance
+                  - listitem [ref=f11e1152]:
+                    - generic [ref=f11e1156]: 30-Days Return
+                  - listitem [ref=f11e1157]:
+                    - generic [ref=f11e1161]: Complimentary Resizing for 90 Days
+                  - listitem [ref=f11e1162]:
+                    - generic [ref=f11e1166]: Free Shipping Worldwide
+        - generic [ref=f11e1167]:
+          - article [ref=f11e1168]:
+            - img "About Adiamor jewelry craftsmanship" [ref=f11e1169]
+            - generic [ref=f11e1171]:
+              - heading "About Adiamor" [level=2] [ref=f11e1172]
+              - paragraph [ref=f11e1173]: We are artisans, expert jewelers, jewelry consultants and GIA trained gemologists who are passionate about what we do. Our award winning services continue to win the loyalty of customers worldwide.
+              - link "Learn more about Adiamor, our services and team" [ref=f11e1174] [cursor=pointer]:
+                - /url: /about-adiamor/
+                - text: Learn More About Adiamor
+          - article [ref=f11e1175]:
+            - img "Adiamor financing options with Affirm" [ref=f11e1176]
+            - generic [ref=f11e1178]:
+              - heading "Financing" [level=2] [ref=f11e1179]
+              - paragraph [ref=f11e1180]: We have partnered with Affirm to give you a simple way to make your purchase with no hidden fees.
+              - link "Learn about financing options through Affirm" [ref=f11e1181] [cursor=pointer]:
+                - /url: /education/financing-insurance/
+        - region "Contact Assistance" [ref=f11e1191]:
+          - region [ref=f11e1192]:
+            - heading [level=2] [aria-hidden] [ref=f11e1193]: Customer Support and Services
+            - list [ref=f11e1194]:
+              - listitem [ref=f11e1195]:
+                - button [ref=f11e1196] [cursor=pointer]:
+                  - paragraph [ref=f11e1201]: Chat with us live!
+                  - paragraph [ref=f11e1202]: Connect with us now for instant assistance!
+              - listitem [ref=f11e1203]:
+                - link [ref=f11e1204] [cursor=pointer]:
+                  - /url: tel:8776275094
+                  - paragraph [ref=f11e1210]: Reach Out to Us
+                  - paragraph [ref=f11e1211]: Need help? Contact one of our gemologists for expert advice!
+              - listitem [ref=f11e1212]:
+                - link [ref=f11e1213] [cursor=pointer]:
+                  - /url: /services/payment-options/
+                  - paragraph [ref=f11e1219]: Flexible Payment Options
+                  - paragraph [ref=f11e1220]: Adiamor accepts credit cards, Affirm, Paypal or bank transfer
+              - listitem [ref=f11e1221]:
+                - link [ref=f11e1222] [cursor=pointer]:
+                  - /url: /policies/warranty/
+                  - paragraph [ref=f11e1227]: Lifetime Warranty
+                  - paragraph [ref=f11e1228]: Enjoy peace of mind with our Lifetime Warranty.
+    - contentinfo [ref=f11e1229]:
+      - heading "Footer" [level=2] [ref=f11e1230]
+      - generic [ref=f11e1233]:
+        - generic [ref=f11e1234]:
+          - link "Go to homepage" [ref=f11e1235] [cursor=pointer]:
+            - /url: /
+          - generic [ref=f11e1242]:
+            - paragraph [ref=f11e1243]: 510 W 6th St. Suite 1200Los Angeles, CA 90014
+            - list [ref=f11e1244]:
+              - listitem [ref=f11e1245]:
+                - link "Call us at 877-627-5094" [ref=f11e1246] [cursor=pointer]:
+                  - /url: tel:8776275094
+                  - generic [ref=f11e1251]: 877-627-5094
+              - listitem [ref=f11e1252]:
+                - link "Email Us" [ref=f11e1253] [cursor=pointer]:
+                  - /url: mailto:Service@Adiamor.com
+        - generic [ref=f11e1259]:
+          - generic [ref=f11e1260]:
+            - generic [ref=f11e1261]:
+              - link "Customer Service" [ref=f11e1262] [cursor=pointer]:
+                - /url: /customer-service/
+              - button "Toggle accordion for Customer Service"
+            - list [ref=f11e1263]:
+              - listitem [ref=f11e1264]:
+                - link "Free FedEx Shipping®" [ref=f11e1265] [cursor=pointer]:
+                  - /url: /policies/shipping-policy/
+              - listitem [ref=f11e1266]:
+                - link "30-Day Returns" [ref=f11e1267] [cursor=pointer]:
+                  - /url: /policies/return-policy/
+              - listitem [ref=f11e1268]:
+                - link "Jewelry Insurance" [ref=f11e1269] [cursor=pointer]:
+                  - /url: /policies/financing-and-insurance/
+              - listitem [ref=f11e1270]:
+                - link "Privacy Policy" [ref=f11e1271] [cursor=pointer]:
+                  - /url: https://www.iubenda.com/privacy-policy/37125914
+              - listitem [ref=f11e1272]:
+                - link "Cookie Policy" [ref=f11e1273] [cursor=pointer]:
+                  - /url: https://www.iubenda.com/privacy-policy/37125914/cookie-policy
+              - listitem [ref=f11e1274]:
+                - link "Terms and Conditions" [ref=f11e1275] [cursor=pointer]:
+                  - /url: https://www.iubenda.com/terms-and-conditions/37125914
+          - generic [ref=f11e1276]:
+            - generic [ref=f11e1277]:
+              - link "About Us" [ref=f11e1278] [cursor=pointer]:
+                - /url: /about-adiamor/
+              - button "Toggle accordion for About Us"
+            - list [ref=f11e1279]:
+              - listitem [ref=f11e1280]:
+                - link "Why Buy From Adiamor" [ref=f11e1281] [cursor=pointer]:
+                  - /url: /why-shop-at-adiamor/
+              - listitem [ref=f11e1282]:
+                - link "Adiamor Reviews" [ref=f11e1283] [cursor=pointer]:
+                  - /url: /testimonials/
+              - listitem [ref=f11e1284]:
+                - link "Flexible Financing" [ref=f11e1285] [cursor=pointer]:
+                  - /url: /flexible-financing/
+              - listitem [ref=f11e1286]:
+                - link "Conflict-Free Policy" [ref=f11e1287] [cursor=pointer]:
+                  - /url: /policies/conflict-free-policy/
+              - listitem [ref=f11e1288]:
+                - link "Social Media Gallery" [ref=f11e1289] [cursor=pointer]:
+                  - /url: /social-media-gallery/
+              - listitem [ref=f11e1290]:
+                - link "Sitemap" [ref=f11e1291] [cursor=pointer]:
+                  - /url: /sitemap/
+              - listitem [ref=f11e1292]:
+                - link "Blog" [ref=f11e1293] [cursor=pointer]:
+                  - /url: https://www.adiamor.com/blog/
+          - generic [ref=f11e1294]:
+            - generic [ref=f11e1295]:
+              - link "Contact" [ref=f11e1296] [cursor=pointer]:
+                - /url: /contact-adiamor/
+              - button "Toggle accordion for Contact"
+            - list [ref=f11e1297]:
+              - listitem [ref=f11e1298]:
+                - link "Accessibility" [ref=f11e1299] [cursor=pointer]:
+                  - /url: /policies/accessibility/
+              - listitem [ref=f11e1300]:
+                - link "Your Privacy Choices" [ref=f11e1301] [cursor=pointer]:
+                  - /url: "#"
+              - listitem [ref=f11e1302]:
+                - link "Notice at Collection" [ref=f11e1303] [cursor=pointer]:
+                  - /url: "#"
+              - listitem [ref=f11e1304]:
+                - 'generic "Visitor ID: XC77ZBK" [ref=f11e1305]': XC77ZBK
+      - generic [ref=f11e1308]:
+        - paragraph [ref=f11e1309]: © 1999-2026 Adiamor.com
+        - list [ref=f11e1310]:
+          - listitem [ref=f11e1311]:
+            - link "BBB Accredited" [ref=f11e1312] [cursor=pointer]:
+              - /url: https://www.bbb.org/us/ca/los-angeles/profile/jewelry-stores/adiamor-1216-13137794/
+              - img "BBB Accredited" [ref=f11e1314]
+          - listitem [ref=f11e1315]:
+            - link "Norton Shopping Guarantee" [ref=f11e1316] [cursor=pointer]:
+              - /url: https://www.digicert.com/what-is-ssl-tls-and-https
+              - img "Norton Shopping Guarantee" [ref=f11e1318]
+          - listitem [ref=f11e1319]:
+            - link "Verified Reviews" [ref=f11e1320] [cursor=pointer]:
+              - /url: https://bizratesurveys.com/reviews/adiamor-reviews
+              - img "Verified Reviews" [ref=f11e1322]
+        - list [ref=f11e1323]:
+          - listitem [ref=f11e1324]:
+            - link "Facebook" [ref=f11e1325] [cursor=pointer]:
+              - /url: https://www.facebook.com/Adiamor
+              - img "Facebook" [ref=f11e1327]
+          - listitem [ref=f11e1328]:
+            - link "Twitter" [ref=f11e1329] [cursor=pointer]:
+              - /url: https://twitter.com/Adiamor
+              - img "X" [ref=f11e1331]
+          - listitem [ref=f11e1332]:
+            - link "Pinterest" [ref=f11e1333] [cursor=pointer]:
+              - /url: https://www.pinterest.com/Adiamor/
+          - listitem [ref=f11e1337]:
+            - link "Instagram" [ref=f11e1338] [cursor=pointer]:
+              - /url: https://www.instagram.com/adiamordiamonds
+          - listitem [ref=f11e1342]:
+            - link "Youtube" [ref=f11e1343] [cursor=pointer]:
+              - /url: https://www.youtube.com/AdiamorDiamonds
+          - listitem [ref=f11e1347]:
+            - link "RSS" [ref=f11e1348] [cursor=pointer]:
+              - /url: https://www.adiamor.com/blog/
+  - iframe [ref=f11e1353]:
+    - generic [ref=f14e6]:
+      - text: protected by
+      - strong [ref=f14e7]: reCAPTCHA
+  - dialog "POPUP Form" [ref=f11e1354]:
+    - generic [ref=f11e1359]:
+      - button "Close dialog" [active] [ref=f11e1360] [cursor=pointer]
+      - generic [ref=f11e1364]:
+        - img "stacked rings shown on hand" [ref=f11e1367]
+        - generic [ref=f11e1368]:
+          - heading "Sign Up & Get The Code" [level=1] [ref=f11e1372]
+          - paragraph [ref=f11e1376]: Sign up to receive access to our latest updates and best offers.
+          - generic [ref=f11e1379]:
+            - generic [ref=f11e1380]: Email
+            - textbox "Email" [ref=f11e1381]
+          - button "SIGN ME UP!" [ref=f11e1384] [cursor=pointer]
+          - button "NO, THANKS" [ref=f11e1387] [cursor=pointer]
+      - alert [ref=f11e1388]
+  - iframe [ref=f11e1389]
+  - alert [ref=f11e1390]:
+    - generic [ref=f11e1392]:
+      - button [ref=f11e1393] [cursor=pointer]
+      - paragraph [ref=f11e1402]: Too many requests or connection problem. Please try again shortly.
+    - text: "!"
+```
+
+# Test source
+
+```ts
+  1  | import { test, expect, Page } from '@playwright/test'
+  2  | 
+  3  | const rows = (page: Page) => page.evaluate(() => [...document.querySelectorAll('[data-index]')]
+  4  |   .filter((e: any) => getComputedStyle(e.closest('.vue-recycle-scroller__item-view') || e).visibility !== 'hidden')
+  5  |   .map((e: any) => ({ i: +e.dataset.index, y: Math.round(e.getBoundingClientRect().y), h: Math.round(e.getBoundingClientRect().height) })))
+  6  | const gtm = (page: Page) => page.evaluate(() => (window as any).dataLayer.filter((d: any) => d.event === 'view_item_list').length)
+  7  | 
+  8  | test('diamond search: list/grid scrollers render, update events fire, GTM view_item_list grows on scroll', async ({ page }) => {
+  9  |   const errors: string[] = []
+  10 |   page.on('pageerror', (e) => errors.push(e.message))
+  11 |   await page.goto('/diamonds/search/round/')
+> 12 |   await page.waitForFunction(() => document.querySelectorAll('.vue-recycle-scroller__item-view').length > 0, null, { timeout: 30000 })
+     |              ^ TimeoutError: page.waitForFunction: Timeout 30000ms exceeded.
+  13 |   await page.waitForTimeout(1500)
+  14 |   const first = await rows(page)
+  15 |   console.log('S1 first rows', JSON.stringify(first.slice(0, 5)), 'count', first.length)
+  16 |   expect(first.length).toBeGreaterThan(2)
+  17 |   const g0 = await gtm(page)
+  18 |   for (let i = 0; i < 6; i++) { await page.mouse.wheel(0, 1200); await page.waitForTimeout(300) }
+  19 |   const g1 = await gtm(page)
+  20 |   const scrolled = await rows(page)
+  21 |   console.log('S1 gtm view_item_list', g0, '->', g1, 'rows after scroll', scrolled.length, 'min index', Math.min(...scrolled.map((r) => r.i)))
+  22 |   expect(g1).toBeGreaterThan(g0)
+  23 |   expect(Math.min(...scrolled.map((r) => r.i))).toBeGreaterThan(0)
+  24 |   expect(errors.filter((e) => !/Yotpo|yotpo|querySelector/.test(e))).toEqual([])
+  25 | })
+  26 | 
+  27 | test('diamond search: keyboard order of rows after load is DOM-ordered', async ({ page }) => {
+  28 |   await page.goto('/diamonds/search/round/')
+  29 |   await page.waitForFunction(() => document.querySelectorAll('.vue-recycle-scroller__item-view').length > 0, null, { timeout: 30000 })
+  30 |   const orders: number[][] = []
+  31 |   for (let i = 0; i < 12; i++) {
+  32 |     orders.push(await page.evaluate(() => [...document.querySelectorAll('[data-index]')].filter((e: any) => getComputedStyle(e.closest('.vue-recycle-scroller__item-view') || e).visibility !== 'hidden').map((e: any) => +e.dataset.index)))
+  33 |     await page.waitForTimeout(100)
+  34 |   }
+  35 |   const sorted = orders.map((o) => o.every((n, k) => k === 0 || n > o[k - 1]))
+  36 |   console.log('S2 DOM sorted over first 1.2s:', sorted.join(','))
+  37 | })
+  38 | 
+  39 | test('settings search: grid renders and restores via scrollToRow helper', async ({ page }) => {
+  40 |   await page.goto('/engagement-rings/search/')
+  41 |   await page.waitForFunction(() => document.querySelectorAll('.vue-recycle-scroller__item-view').length > 0, null, { timeout: 30000 })
+  42 |   await page.waitForTimeout(1200)
+  43 |   const r = await rows(page)
+  44 |   console.log('S3 setting rows', r.length, JSON.stringify(r.slice(0, 3)))
+  45 |   expect(r.length).toBeGreaterThan(1)
+  46 | })
+  47 | 
+```

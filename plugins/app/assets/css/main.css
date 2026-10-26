@@ -1,0 +1,628 @@
+/* @import './fonts/montserrat.css'; */
+@import './fonts/customFont.css';
+@import 'sweetalert2/dist/sweetalert2.min.css';
+
+/* Skip to main content - visible only on focus for keyboard/screen reader users */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 0.5rem;
+  z-index: 9999;
+  padding: 0.75rem 1rem;
+  background-color: rgb(255, 255, 255);
+  color: rgb(31, 37, 51);
+  font-size: 16px;
+  text-shadow: rgb(39, 39, 45) 0px 0px;
+  pointer-events: none;
+  font-weight: 500;
+  text-decoration: none;
+  border-radius: 50px;
+  border: 3px solid rgba(19, 110, 248, 0.8);
+  outline: rgb(99, 154, 249) solid 0px;
+  box-shadow: rgba(19, 110, 248, 0.3) 0px 0px 0px 5px;
+  transition: top 0.22s ease;
+}
+.skip-link:focus {
+  top: 0;
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.skip-link .content {
+    display: inline-flex;
+    margin-inline-start: 30px;
+    font-size: 10px;
+    text-transform: uppercase;
+    justify-content: center;
+    align-items: center;
+    border-radius: inherit;
+    background-color: rgb(20, 111, 248);
+    padding: 5px 10px;
+    color: rgb(255, 255, 255);
+}
+
+.skip-link .content .icon {
+    font-size: 15px;
+    margin-inline-end: 3px;
+    line-height: 1;
+}
+
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: transparent;
+  background: url('data:image/svg+xml;utf8,<svg fill="%23333" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 0.25rem center/1rem auto;
+}
+
+@media(min-width: 1280px) {
+  .yotpo-slider .yotpo-slider-wrapper, .yotpo-visual-carousel .yotpo-slider-wrapper, .yotpo-pictures-widget .yotpo-slider-wrapper {
+    max-width: 1216px !important;
+  }
+}
+
+.diamond-gradient::after {
+  /* background: linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(243,244,246,1) 10%, rgba(255,255,255,1) 90%, rgba(255,255,255,1) 100%); */
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgba(242, 242, 242, 0.7), transparent 20%);
+}
+
+.ring-gradient {
+  /* background: linear-gradient(0deg, rgba(243,244,246,1) 0%, rgba(255,255,255,1) 10%, rgba(255,255,255,1) 90%, rgba(243,244,246,1) 100%); */
+  background: linear-gradient(#eee,white,#eee);
+}
+
+.big-ring-gradient {
+  /* background: linear-gradient(0deg, #eee 0%, rgba(255,255,255,1) 10%, rgba(255,255,255,1) 90%, #eee 100%); */
+  background: linear-gradient(#eee,white,#eee);
+}
+
+.custom-gradient {
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #f6f6f6), color-stop(50%, rgba(246, 246, 246, 0)), color-stop(100%, #f6f6f6));
+  background: -webkit-linear-gradient(top, #f6f6f6 0%, rgba(246, 246, 246, 0) 50%, #f6f6f6 100%);
+  background: -o-linear-gradient(top,#f6f6f6 0%,rgba(246,246,246,0) 50%,#f6f6f6 100%);
+  background: -ms-linear-gradient(top,#f6f6f6 0%,rgba(246,246,246,0) 50%,#f6f6f6 100%);
+  background: linear-gradient(to bottom, #f6f6f6 0%, rgba(246, 246, 246, 0) 50%, #f6f6f6 100%);
+}
+
+.yotpo .yotpo-slider-title-wrapper {
+  @apply !text-left
+}
+.yotpo-slider-title,
+.yotpo .yotpo-slider-title-wrapper span.yotpo-slider-title {
+  @apply !text-lg lg:!text-2xl/[50px] !font-normal !text-black !mb-8 !uppercase !font-gill-sans !tracking-wider;
+}
+.yotpo.yotpo-pictures-widget.yotpo-size-7 {
+  @apply max-w-7xl px-4 mx-auto
+}
+.yotpo div, .yotpo span, .yotpo p, .yotpo a, .yotpo img, .yotpo i, .yotpo strong, .yotpo sup, .yotpo ul, .yotpo li, .yotpo form, .yotpo label {
+  @apply !font-sans
+}
+.yotpo .yotpo-label-container {
+  @apply !border-none
+}
+.yotpo-pictures-widget .yotpo-display-wrapper .y-arrows .yotpo-icon-left-arrow-light,
+.yotpo-pictures-widget .yotpo-display-wrapper .y-arrows .yotpo-icon-right-arrow-light {
+ @apply !bg-black/90
+}
+.yotpo-slider .yotpo-display-wrapper .y-arrows .yotpo-icon-left-arrow-light, .yotpo-visual-carousel .yotpo-display-wrapper .y-arrows .yotpo-icon-left-arrow-light, .yotpo-pictures-widget .yotpo-display-wrapper .y-arrows .yotpo-icon-left-arrow-light,
+.yotpo-slider .yotpo-display-wrapper .y-arrows .yotpo-icon-right-arrow-light, .yotpo-visual-carousel .yotpo-display-wrapper .y-arrows .yotpo-icon-right-arrow-light, .yotpo-pictures-widget .yotpo-display-wrapper .y-arrows .yotpo-icon-right-arrow-light {
+  @apply !text-white
+}
+
+.main-widget.yotpo-display-wrapper  .rating-stars-container {
+  height: auto !important;
+}
+
+.yotpo.yotpo-main-widget .yotpo-bottomline .yotpo-icon-star, .yotpo.yotpo-main-widget .yotpo-bottomline .yotpo-icon-half-star, .yotpo.yotpo-main-widget .yotpo-bottomline .yotpo-icon-empty-star, .yotpo .yotpo-modal-dialog .yotpo-bottomline .yotpo-icon-star, .yotpo .yotpo-modal-dialog .yotpo-bottomline .yotpo-icon-half-star, .yotpo .yotpo-modal-dialog .yotpo-bottomline .yotpo-icon-empty-star {
+  @apply !text-xl/4
+}
+
+.yotpo .yotpo-icon-default-star:before, .yotpo .yotpo-icon-half-star:before, .yotpo .yotpo-icon-star:before, .yotpo-shoppers-say .yotpo-icon-empty-star:before {
+  @apply !text-gray-black
+}
+
+.font-sans .yotpo .yotpo-icon-star.rating-star,
+.yotpo.bottomLine .standalone-bottomline .yotpo-icon.yotpo-icon-half-star,
+.yotpo.yotpo-main-widget .bottom-line-items .yotpo-filter-stars .yotpo-icon.yotpo-icon-half-star,
+.star .yotpo .yotpo-icon.yotpo-icon-empty-star.rating-star {
+    background-image: none !important;
+}
+
+.yotpo .yotpo-icon-default-empty-star:before, .yotpo .yotpo-icon.yotpo-icon-empty-star:before {
+    @apply !text-black
+}
+
+.yotpo-carousel .yotpo-carousel-arrow.glide__arrow--left {
+  @apply !left-0
+}
+
+.yotpo-carousel .yotpo-carousel-arrow.glide__arrow--right {
+  @apply !right-0
+}
+
+.yotpo-carousel .yotpo-carousel-arrow:hover {
+ background-color: #306499;
+}
+
+.yotpo-carousel .yotpo-carousel-arrow:hover svg path {
+  @apply !fill-white;
+}
+
+.yotpo.bottomLine .yotpo-icon-star {
+  @apply !bg-none
+}
+
+.yotpo .yotpo-bottomline a {
+  @apply !text-black hover:!text-black
+}
+
+.radio {
+  @apply appearance-none border-2 relative border-gray-400 rounded-full checked:before:absolute checked:before:rounded-full checked:before:content-[''] checked:before:block checked:before:m-[2px] checked:before:w-2 checked:before:h-2 flex items-center justify-center;
+}
+
+.radio:checked {
+  @apply border-primary
+}
+
+.radio:checked::before {
+  @apply bg-primary
+}
+
+.checkbox {
+  @apply appearance-none border-2 border-solid border-primary checked:before:ml-0 checked:before:relative checked:before:bottom-1.5 checked:before:content-['\2713'] checked:before:text-white
+}
+
+.checkbox:checked {
+  @apply bg-primary
+}
+
+/* .glide__slides {
+  @apply gap-8
+}
+
+.glide__slide {
+  @apply !mx-0 relative before:absolute before:block before:content-[''] before:bg-[url('~/assets/images/img/quote.svg')] before:bg-no-repeat before:bg-cover before:left-0 before:z-20 before:w-12 before:h-10 before:opacity-50 before:mx-6 before:my-3 my-5;
+} */
+
+.review-title {
+  @apply capitalize;
+}
+
+.reviews-carousel-card-container {
+  @apply !m-0 !border-0 !rounded-none;
+}
+
+.reviewer-status {
+  @apply bg-green-800 py-1 px-3 rounded-full;
+}
+
+.reviewer-status-text {
+  @apply !text-white !italic !text-xs;
+}
+
+.review-content {
+  @apply !font-light;
+}
+
+.reviews-carousel-card-review-product-container {
+  @apply !hidden;
+}
+
+.home-carousel .yotpo-carousel {
+  @apply !relative;
+}
+@media(min-width: 769px) {
+  .home-carousel .glide__slide {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .home-carousel .glide__slide.glide__slide--active {
+    opacity: 1;
+  }
+}
+
+@media(max-width: 768px) {
+  .reviews-carousel-card-container.reviews-carousel-card-mobile-mode {
+    @apply !min-h-[auto]
+  }
+}
+
+.yotpo-reviews-carousel-widget-container {
+  margin: 0 auto !important;
+}
+
+.yotpo-reviews-carousel-bottomline-seo {
+  display: none !important;
+}
+
+
+@media(min-width: 769px) {
+  .yotpo-reviews-carousel-widget-container {
+    @apply !w-full;
+  }
+  .last-arrow > .icon {
+    @apply hidden;
+  }
+}
+
+/* Vue added classes */
+.active-tab {
+  border-color: #306499; /* Replaced primary color */
+  &:hover {
+    border-color: #306499; /* Replaced primary color */
+  }
+}
+
+.active-span {
+  background-color: #306499; /* Replaced primary color */
+}
+
+.active-tab-title {
+  color: #306499; /* Replaced primary color */
+}
+
+.error {
+  @apply text-red-500 mt-1.5 inline-block;
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #EBEBEB;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #6D6D6D;
+  border-radius: 10px;
+}
+
+::-webkit-input-placeholder {
+  font-size: 16px !important;
+}
+::-moz-placeholder {
+  font-size: 16px !important;
+}
+:-ms-input-placeholder {
+  font-size: 16px !important;
+}
+::placeholder {
+  font-size: 16px !important;
+}
+
+.first-tick > li:first-child svg {
+  margin-left: 3.5rem;
+}
+
+@screen xl {
+  .container {
+    max-width: 65rem !important;
+  }
+}
+
+h2.bundle-product-title + p {
+  margin-top: 0 !important;
+  margin-bottom: 0.5rem !important;
+  font-size: .875rem;
+  line-height: 1.25rem;
+  --tw-text-opacity: 1;
+  color: #666;
+  color: rgba(102,102,102,var(--tw-text-opacity));
+}
+
+/* Base styles for the range slider */
+.range-slider {
+  @apply appearance-none bg-transparent w-full h-1;
+}
+
+/* Track Styles */
+.range-slider::-webkit-slider-runnable-track {
+  @apply bg-gray-200 h-1;
+  border-radius: 1px;
+}
+
+.range-slider::-moz-range-track {
+  @apply bg-gray-200 h-1;
+  border-radius: 1px;
+}
+
+.range-slider::-ms-track {
+  @apply bg-gray-200 h-1;
+  border-radius: 1px;
+  border: none;
+  background: transparent;
+}
+
+.range-slider.dark-light::-webkit-slider-runnable-track {
+  @apply bg-gradient-to-r from-white to-black;
+}
+.range-slider.dark-light::-moz-range-track {
+  @apply bg-gradient-to-r from-white to-black;
+}
+.range-slider.dark-light::-ms-track {
+  @apply bg-gradient-to-r from-white to-black;
+}
+
+/* Thumb Styles */
+.range-slider::-webkit-slider-thumb {
+  @apply appearance-none h-4 w-4 rounded-full cursor-pointer;
+  background-color: #306499;
+  margin-top: -6px;
+  /* Centers the thumb vertically */
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.range-slider::-moz-range-thumb {
+  @apply h-4 w-4 rounded-full cursor-pointer;
+  background-color: #306499;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.range-slider::-ms-thumb {
+  @apply h-4 w-4 rounded-full cursor-pointer;
+  background-color: #306499;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+/* Hover and Focus States */
+.range-slider:hover::-webkit-slider-thumb {
+  background-color: #306499;
+  transform: scale(1);
+}
+
+.range-slider:hover::-moz-range-thumb {
+  background-color: #306499;
+  transform: scale(1);
+}
+
+.range-slider:hover::-ms-thumb {
+  background-color: #306499;
+  transform: scale(1);
+}
+
+/* Remove default focus outline — custom thumb ring instead */
+.range-slider:focus {
+  outline: none;
+}
+.range-slider:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid #306499;
+  outline-offset: 3px;
+}
+.range-slider:focus-visible::-moz-range-thumb {
+  outline: 2px solid #306499;
+  outline-offset: 3px;
+}
+
+/* value classes */
+.value:after {
+  content: "";
+  display: block;
+  width: 24px;
+  height: 24px;
+  border-radius: 100%;
+  cursor: pointer
+}
+
+/* @media(min-width: 768px) {
+  .value:after {
+    width: 24px;
+    height: 24px
+  }
+} */
+
+.value-silver:after,
+.value-platinum:after {
+  background: #b3b2af !important;
+  background: -moz-linear-gradient(30deg, #b3b2af 0, #f7f7f7 55%, #f7f7f7 60%, #b3b2af 100%) !important;
+  background: -webkit-linear-gradient(30deg, #b3b2af 0, #f7f7f7 55%, #f7f7f7 60%, #b3b2af 100%) !important;
+  background: linear-gradient(30deg, #b3b2af 0, #f7f7f7 55%, #f7f7f7 60%, #b3b2af 100%) !important
+}
+
+.value-yellow:after {
+  background: #e1b94f !important;
+  background: -moz-linear-gradient(30deg, #e1b94f 0, #faf1d8 55%, #faf1d8 60%, #e1b94f 100%) !important;
+  background: -webkit-linear-gradient(30deg, #e1b94f 0, #faf1d8 55%, #faf1d8 60%, #e1b94f 100%) !important;
+  background: linear-gradient(30deg, #e1b94f 0, #faf1d8 55%, #faf1d8 60%, #e1b94f 100%) !important
+}
+
+.value-rose:after {
+  background: #ec8a55 !important;
+  background: -moz-linear-gradient(30deg, #ec8a55 0, #fcede2 55%, #fcede2 60%, #ec8a55 100%) !important;
+  background: -webkit-linear-gradient(30deg, #ec8a55 0, #fcede2 55%, #fcede2 60%, #ec8a55 100%) !important;
+  background: linear-gradient(30deg, #ec8a55 0, #fcede2 55%, #fcede2 60%, #ec8a55 100%) !important
+}
+
+.value-titanium:after {
+  background: #060606 !important;
+  background: -moz-linear-gradient(30deg, #060606 0, #919191 55%, #919191 60%, #060606 100%) !important;
+  background: -webkit-linear-gradient(30deg, #060606 0, #919191 55%, #919191 60%, #060606 100%) !important;
+  background: linear-gradient(30deg, #060606 0, #919191 55%, #919191 60%, #060606 100%) !important
+}
+
+.value-tantalum:after {
+  background: #4b4b4b !important;
+  background: -moz-linear-gradient(30deg, #4b4b4b 0, #959595 55%, #959595 60%, #4b4b4b 100%) !important;
+  background: -webkit-linear-gradient(30deg, #4b4b4b 0, #959595 55%, #959595 60%, #4b4b4b 100%) !important;
+  background: linear-gradient(30deg, #4b4b4b 0, #959595 55%, #959595 60%, #4b4b4b 100%) !important
+}
+
+[id*="b_5iy8l258_"] {
+  /* height: 215px !important */
+  height: 251px !important
+}
+
+.material .slick-list[data-v-3d1a4f76] {
+  overflow: visible !important;
+}
+
+/* Chrome, Safari, Edge, Opera (WebKit/Blink) */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+/* Optional: Prevent arrows from appearing on focus in some browsers */
+input[type=number]:focus {
+  outline: none;
+}
+
+/* swal modification */
+.swal2-header {
+	display: none !important;
+}
+
+.swal2-popup.swal2-toast {
+  padding: 0 !important;
+  border-radius: 0 !important;
+}
+
+/* Star Rating CSS*/
+.yotpo .yotpo-icon-default-star::before,
+.yotpo .yotpo-icon-star::before,
+.yotpo .yotpo-icon-half-star::before,
+.yotpo-shoppers-say .yotpo-icon-empty-star::before {
+  color: #6497cd;
+}
+
+.yotpo.bottomLine .yotpo-icon-star,
+.yotpo.bottomLine .yotpo-icon-half-star,
+.yotpo.bottomLine .yotpo-icon-empty-star {
+    background-image: none!important;
+    font-size: 16px!important;
+    width: 20px!important;
+    height: 20px!important;
+    line-height: 20px;
+    margin: 1px -1px;
+}
+
+.yotpo-display-l .yotpo-main-layout div.yotpo-head,
+.yotpo-display-m .yotpo-main-layout div.yotpo-head {
+  display: none !important;
+}
+
+.yotpo-main-layout .yotpo-layout-header-wrapper {
+  @apply !mb-0
+}
+
+@media (min-width: 768px) {
+  .yotpo-main-layout .yotpo-layout-header-wrapper {
+    @apply !absolute top-16;
+  }
+}
+@media (min-width: 1024px) {
+  .yotpo-main-layout .yotpo-layout-header-wrapper {
+    @apply top-24;
+  }
+}
+
+.yotpo-display-l .yotpo-review:not(.yotpo-media-modal-review),
+.yotpo-display-m .yotpo-review:not(.yotpo-media-modal-review) {
+  margin: 10px 0 !important;
+}
+
+.yotpo-horizontal-pagination .yotpo-pagination-number-container {
+  @apply !flex !items-center;
+}
+
+.yotpo.yotpo-pictures-widget[data-gallery-id]:has(.yotpo-lightbox-wrapper) h2 {
+    display: block;
+}
+
+div[title="Live chat button"] > div {
+    z-index: 40 !important;
+    bottom: 140px !important;
+}
+
+@media (max-width: 640px) {
+  .yotpo-display-s .yotpo-head,
+  .yotpo-reviews-main-widget div:empty {
+    @apply !hidden;
+  }
+
+  .yotpo-display-s .yotpo-bottom-line,
+  .yotpo-display-s .yotpo-main-layout .yotpo-layout-header-wrapper,
+  .yotpo-bottom-line .yotpo-summary-section .yotpo-bottom-line-summary {
+    @apply !my-0;
+  }
+
+  .yotpo-display-s .yotpo-reviews-list-wrapper {
+    @apply divide-y divide-black/10;
+  }
+
+  .yotpo-display-s .yotpo-reviews-item {
+    @apply !py-4;
+  }
+
+  .yotpo-display-s .yotpo-review {
+    @apply !my-0 relative;
+  }
+
+  .yotpo-star-rating .star-container:not(:last-child) {
+    @apply !mr-1;
+  }
+
+  .yotpo-display-s .yotpo-review .yotpo-review-center-panel .yotpo-review-star-rating {
+    @apply !absolute top-[30px] right-0 !mb-0;
+  }
+
+  .yotpo-star-rating .star-container {
+    @apply !size-3;
+  }
+
+  .yotpo-display-s .yotpo-review .yotpo-review-center-panel .yotpo-review-content {
+    @apply !mt-0;
+  }
+}
+
+/* ─── Yotpo WCAG 2.2 AA Contrast Fixes ─────────────────────────────── */
+/* "Verified Buyer" text: default color fails 4.5:1 ratio — override to #595959 */
+.yotpo-reviewer-verified-buyer-text {
+  color: #595959 !important;
+}
+
+/* Container: pin to the right with a gap */
+.swal2-container.app-toast-container {
+  right: 16px !important;
+  left: auto !important;
+  width: auto !important;
+}
+
+/* Popup: shrink to content, capped at 480px */
+.swal2-popup.swal2-toast.app-toast-popup {
+  width: auto !important;
+  max-width: 480px !important;
+  padding: 0 !important; /* your inner div already has p-4 */
+}
+
+/* Make sure the long text wraps instead of overflowing */
+.app-toast-popup .swal2-html-container {
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow-wrap: anywhere;
+}
+
+/* Small screens */
+@media (max-width: 520px) {
+  .swal2-container.app-toast-container {
+    right: 8px !important;
+    left: 8px !important;
+  }
+  .swal2-popup.swal2-toast.app-toast-popup {
+    max-width: 100% !important;
+  }
+}

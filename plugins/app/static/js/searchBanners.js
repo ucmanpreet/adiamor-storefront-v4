@@ -1,0 +1,66 @@
+import { STATIC_ROUTES } from "~/utils/staticRoutes";
+
+const exportBanners = {
+    'hidden-halo': {
+        'title': 'Hidden Halo Engagement Rings',
+        'description': "The newest term in engagement ring details is Hidden Halo. At Adiamor we call a Hidden Halo, adding diamonds to the basket. This refers to a halo that is not seen from a bird's-eye view. At Adiamor, you can add diamonds to any basket setting. When done this way, it creates a dainty halo that doesn't take away from the center stone, but adds extra sparkle when viewing the ring from any other angle.",
+        'backward_link': '',
+        'backward_link_text': '',
+        'forward_link': '',
+        'forward_link_text': '',
+        'banner_image' : 'https://cdn.adiamor.com/landing-pages/hidden-halo-hero.jpg?updatedAt=1747804963883',
+        'bg_color': '#adadad',
+    },
+    'thin-band-collection': {
+        'title': 'Thin Band Engagement Ring Collection',
+        'description': "Adiamor's thin band engagement ring collection features a modern take on classic styles with band widths ranging from 1.5mm to 1.7mm. Thin band ring styles include simple solitaires, diamond bands, halos and 3 stone rings. Thin bands are comfortable to wear, stack well with other rings, and accentuate the center diamond. Browse through our collection to design your perfect engagement ring.",
+         'backward_link': '',
+        'backward_link_text': '',
+        'forward_link': '',
+        'forward_link_text': '',
+        'banner_image' : 'https://cdn.adiamor.com/landing-pages/heros/thin-band-hero.jpg?updatedAt=1746137297332',
+        'bg_color': '#000',
+    },
+    'bold-gold-ring-collection': {
+        'title': 'Bold Gold Rings and Bands',
+        'description': "We've curated and designed the best on trend jewelry pieces to add to your collection. Statement rings, bold chains and the perfect hoops can be styled with everything from lounge wear to dressing up. Our Bold Gold Collection is made of 100% 14k Gold, not gold plated, and will not tarnish poolside or during your workout. We believe that luxury can be accessible. Just as we've done with engagement rings for over 20 years, this collection is offered to everyone without crazy markups.",
+        'backward_link': '',
+        'backward_link_text': '',
+        'forward_link': STATIC_ROUTES.BOLD_GOLD,
+        'forward_link_text': 'Back To Collection',
+        'banner_image' : 'https://cdn.adiamor.com/landing-pages/Bold%20Gold%20Collection/bold-gold-rings.webp?updatedAt=1747970107724',
+        'bg_color': '#000',
+    },
+    'bold-gold-pendant-collection': {
+        'title': 'Bold Gold Pendant Search',
+        'description': "We've curated and designed the best on trend jewelry pieces to add to your collection. Statement rings, bold chains and the perfect hoops can be styled with everything from lounge wear to dressing up. Our Bold Gold Collection is made of 100% 14k Gold, not gold plated, and will not tarnish poolside or during your workout. We believe that luxury can be accessible. Just as we've done with engagement rings for over 20 years, this collection is offered to everyone without crazy markups.",
+        'backward_link': '',
+        'backward_link_text': '',
+        'forward_link': STATIC_ROUTES.BOLD_GOLD,
+        'forward_link_text': 'Back To Collection',
+        'banner_image' : 'https://cdn.adiamor.com/landing-pages/Bold%20Gold%20Collection/bold-gold-necklaces.webp?updatedAt=1747970012537',
+        'bg_color': '#000',
+    },
+    'bold-gold-earring-collection': {
+        'title': 'Bold Gold Earring Search',
+        'description': "We've curated and designed the best on trend jewelry pieces to add to your collection. Statement rings, bold chains and the perfect hoops can be styled with everything from lounge wear to dressing up. Our Bold Gold Collection is made of 100% 14k Gold, not gold plated, and will not tarnish poolside or during your workout. We believe that luxury can be accessible. Just as we've done with engagement rings for over 20 years, this collection is offered to everyone without crazy markups.",
+        'backward_link': '',
+        'backward_link_text': '',
+        'forward_link': STATIC_ROUTES.BOLD_GOLD,
+        'forward_link_text': 'Back To Collection',
+        'banner_image' : 'https://cdn.adiamor.com/landing-pages/Bold%20Gold%20Collection/bold-gold-earrings.webp?updatedAt=1747970012680',
+        'bg_color': '#000',
+    },
+    'bold-gold-bracelets-collection': {
+        'title': 'Bold Gold Bracelet Search',
+        'description': "We've curated and designed the best on trend jewelry pieces to add to your collection. Statement rings, bold chains and the perfect hoops can be styled with everything from lounge wear to dressing up. Our Bold Gold Collection is made of 100% 14k Gold, not gold plated, and will not tarnish poolside or during your workout. We believe that luxury can be accessible. Just as we've done with engagement rings for over 20 years, this collection is offered to everyone without crazy markups.",
+        'backward_link': '',
+        'backward_link_text': '',
+        'forward_link': STATIC_ROUTES.BOLD_GOLD,
+        'forward_link_text': 'Back To Collection',
+        'banner_image' : 'https://cdn.adiamor.com/landing-pages/Bold%20Gold%20Collection/bold-gold-bracelets.webp?updatedAt=1747970012873',
+        'bg_color': '#000',
+    },
+};
+
+export default exportBanners;

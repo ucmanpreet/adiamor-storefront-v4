@@ -1,0 +1,49 @@
+{
+  "name": "adiamor-storefront-nuxt4",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "test:proto": "playwright test --config=playwright.proto.config.ts"
+  },
+  "dependencies": {
+    "@nuxt/image": "^2.2.0",
+    "@nuxtjs/tailwindcss": "^6.14.0",
+    "@pinia/nuxt": "^1.0.3",
+    "@tanstack/vue-virtual": "^3.13.47",
+    "@vee-validate/rules": "^4.15.1",
+    "axios": "^1.20.0",
+    "embla-carousel": "^8.6.0",
+    "embla-carousel-vue": "^8.6.0",
+    "focus-trap": "^7.8.0",
+    "focus-trap-vue": "^4.1.0",
+    "idb": "^8.0.4",
+    "isomorphic-dompurify": "^3.19.0",
+    "js-cookie": "^3.0.8",
+    "libphonenumber-js": "^1.13.15",
+    "mitt": "^3.0.1",
+    "mobile-detect": "^1.4.5",
+    "nouislider": "^15.8.1",
+    "nuxt": "^4.6.2",
+    "pinia": "^4.1.0",
+    "pinia-plugin-persistedstate": "^4.7.1",
+    "postcode-validator": "^3.10.26",
+    "postcss-import": "^17.0.1",
+    "postcss-nesting": "^14.0.3",
+    "sweetalert2": "^11.26.25",
+    "vee-validate": "^4.15.1",
+    "vite-svg-loader": "^5.1.3",
+    "vue": "^3.5.44",
+    "vue-virtual-scroller": "^3.0.5"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "^1.64.1",
+    "@tailwindcss/typography": "^0.5.20",
+    "typescript": "^7.0.2"
+  }
+}
