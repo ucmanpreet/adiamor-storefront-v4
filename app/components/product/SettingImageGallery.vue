@@ -239,7 +239,7 @@
                             :class="activeTab === 'socialMedia' ? 'ring-primary' : 'ring-transparent'"
                             aria-hidden="true"></span>
                         <span aria-hidden="true"
-                            class="bg-white border border-gray-300 sm:border-0 sm:bg-black/50 sm:text-white font-medium rounded-full sm:rounded-none text-xs absolute top-0 sm:top-auto sm:bottom-0 right-0 text-center px-1 py-0.5 sm:py-1 -m-2.5 sm:m-1 capitalize z-10">+{{ dataImages }}</span>
+                            class="bg-white border border-gray-300 sm:border-0 sm:bg-black/50 sm:text-white font-medium rounded-full sm:rounded-none text-xs absolute top-0 sm:top-auto sm:bottom-0 right-0 text-center px-1 py-0.5 sm:py-1 m-0.5 sm:m-1 capitalize z-10">+{{ dataImages }}</span>
                     </button>
                 </div>
             </div>

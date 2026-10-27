@@ -10,7 +10,7 @@
         <ImagePreview v-else :image="imgData" ref="viewerPurchasePreview" :key="imgData.length"
             className="border border-gray-200" :hidePreview="true" />
         <span v-if="imgData.length > 1" aria-hidden="true"
-            class="bg-white border border-gray-300 sm:border-0 sm:bg-black/50 sm:text-white font-medium rounded-full sm:rounded-none text-xs absolute top-0 sm:top-auto sm:bottom-0 right-0 text-center px-1 py-0.5 sm:py-1 -m-2.5 sm:m-1 capitalize z-10">
+            class="bg-white border border-gray-300 sm:border-0 sm:bg-black/50 sm:text-white font-medium rounded-full sm:rounded-none text-xs absolute top-0 sm:top-auto sm:bottom-0 right-0 text-center px-1 py-0.5 sm:py-1 m-0.5 sm:m-1 capitalize z-10">
             +{{ imgData.length }}</span>
     </div>
 </template>
