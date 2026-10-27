@@ -45,13 +45,6 @@ export const head = {
         tagPosition: 'bodyClose'
       },
       {
-        key: 'affirm-script',
-        src: process.env.AFFIRM_SANDBOX_URL,
-        defer: true,
-        async: true,
-        tagPosition: 'bodyClose'
-      },
-      {
         key: 'liveAgentInit',
         innerHTML: "(function (d, src, c) { var t = d.scripts[d.scripts.length - 1], s = d.createElement('script'); s.id = 'la_x2s6df8d'; s.defer = true; s.src = '" + process.env.LIVE_AGENT_SCRIPT + "'; s.onload = s.onreadystatechange = function () { var rs = this.readyState; if (rs && (rs != 'complete') && (rs != 'loaded')) { return; } c(this); }; t.parentElement.insertBefore(s, t.nextSibling); })(document, '" + process.env.LIVE_AGENT_SCRIPT + "', function (e) {});",
         type: 'text/javascript',
