@@ -30,10 +30,25 @@ const BOLT_CHECKOUT_OBJECT = ref(null);
 
 onMounted(async () => {
   BOLT_CHECKOUT_OBJECT.value = config.boltCheckoutObj;
-  if (props.cart_id) {
-    await boltPayment()
-  };
+  if (!props.cart_id) {
+    // Nothing to open Bolt with: release the page loader instead of leaving it spinning.
+    closeWithError("Unable to start the secure checkout. Please try again.");
+    return;
+  }
+  try {
+    await boltPayment();
+  } catch (error) {
+    console.log('Bolt config error', error);
+    closeWithError("Unable to start the secure checkout. Please try again or choose another payment method.");
+  }
 });
+
+// Fallback for any failure before the Bolt modal opens: remove the page loader and tell the customer.
+function closeWithError(message) {
+  emit("boltModalClose");
+  $bus.emit("ModalCloseEvent");
+  createSwalAlert(message, "error");
+}
 
 async function getOrderToken() {
   try {
@@ -154,20 +169,21 @@ async function boltPayment() {
         }
       };
       try {
-        if (window || window.BoltCheckout) {
+        if (window.BoltCheckout) {
           let boltVar = window.BoltCheckout.configure(cart, hints, callbacks);
           await boltVar.open();
         } else {
-          $bus.emit("ModalCloseEvent");
-          console.log('Bolt config error');
+          console.log('Bolt config error: BoltCheckout is not loaded');
+          closeWithError("Secure checkout could not be loaded. Please try again or choose another payment method.");
           return;
         }
       } catch (error) {
-        emit("boltModalClose");
-        $bus.emit("ModalCloseEvent")
         console.log('Bolt config error', error);
+        closeWithError("Secure checkout could not be opened. Please try again or choose another payment method.");
       }
   } else {
+    // getOrderToken already alerted when it failed; just release the loader.
+    emit("boltModalClose");
     $bus.emit("ModalCloseEvent");
     console.log('Bolt config error');
     return;

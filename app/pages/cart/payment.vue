@@ -622,7 +622,7 @@ async function createOrder() {
 
 function onModalCloseEvent() {
   isAffirm.value = isBolt.value = false;
-  loader.value = false;
+  loader.value = payLoader.value = false;
 }
 function onApplyLoader() {
   loader.value = true;
