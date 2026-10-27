@@ -353,7 +353,8 @@ export const useMainStore = defineStore('main', {
       },
       setCompareList(payload = null) {
         if (payload && payload.sku) {
-          let compareList = this.compareList || [];
+          // New array, not an in-place push/splice: the list is markRaw, so only a new reference reaches watchers
+          let compareList = [...(this.compareList || [])];
           const index = compareList.findIndex(item => item.sku === payload.sku);
           if (index !== -1) {
             compareList.splice(index, 1);
@@ -367,7 +368,7 @@ export const useMainStore = defineStore('main', {
       },
       setPairCompareList(payload = null) {
         if (payload && payload.sku) {
-          let comparePairList = this.comparePairList || [];
+          let comparePairList = [...(this.comparePairList || [])];
           const index = comparePairList.findIndex(item => item.sku === payload.sku);
           if (index !== -1) {
             comparePairList.splice(index, 1);
