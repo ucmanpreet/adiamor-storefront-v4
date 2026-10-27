@@ -1,6 +1,5 @@
 <!-- File: AppButtonLink.vue -->
 <template>
-    <!-- Disabled State (NuxtLink cannot be disabled) -->
     <span
         v-if="href && disabled"
         class="inline-flex items-center justify-center text-xs sm:text-sm font-normal px-8 py-2 cursor-not-allowed opacity-50"
@@ -12,7 +11,6 @@
         <slot></slot>
     </span>
 
-    <!-- Active Link -->
     <NuxtLink
         v-else-if="href"
         :to="href"
@@ -26,6 +24,9 @@
 </template>
 
 <script setup>
+// Root is a single v-if / v-else-if pair with no comments between them: a comment node makes the root a fragment,
+// which drops fallthrough attrs (class, tabindex) during SSR and causes hydration mismatches.
+// (Disabled state: NuxtLink cannot be disabled, so a span is rendered instead.)
 const props = defineProps({
     colorType: {
         type: String,
