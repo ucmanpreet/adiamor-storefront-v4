@@ -497,8 +497,6 @@ function completeSetting() {
 				'aria-announce',
 				`Reviewing your ${settingName.value === 'Earring' ? 'Earrings' : settingName.value}. Setting: ${configProduct.value?.name || selectedSku}. Diamond: ${simpleProduct.value?.name || diamondSku}. Redirecting to review page.`
 			);
-			console.log(url, 'testing here');
-			
 			router.push(url);
 		}
 	} else {

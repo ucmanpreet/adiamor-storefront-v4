@@ -11,6 +11,11 @@ const withSlash = (p: string) => (p === '/' || p.endsWith('/') ? p : `${p}/`)
 const noSlash = (p: string) => (p === '/' ? p : p.replace(/\/+$/, ''))
 // legacy URL -> new URL (utils/menu.js). Real 301s: routeRules (pre-rendered redirect pages) + `_redirects` file
 const redirectMap: Record<string, string> = Object.fromEntries(Object.entries(redirectUrls).map(([from, to]) => [noSlash(from), to as string]))
+// Redirect only the bare URL (Nuxt 2 middleware compared `fullPath`): `/your-setting/?setting=..&diamond=..` is the
+// bundle review page. routeRules and `_redirects` match the path regardless of the query, so these stay out of them
+// and are handled by route middleware `redirect.global.js` alone.
+const queryAwareRedirects = ['/your-setting']
+const pathRedirectMap = Object.fromEntries(Object.entries(redirectMap).filter(([from]) => !queryAwareRedirects.includes(from)))
 const staticPaths: string[] = customRoutes.map((r: any) => r.path).filter((p: string) => !/[:*]/.test(p))
 
 export default defineNuxtConfig({
@@ -62,7 +67,7 @@ export default defineNuxtConfig({
     'nitro:init'(nitro: any) {
       nitro.hooks.hook('prerender:done', async () => {
         const lines = [
-          ...Object.entries(redirectMap).flatMap(([from, to]) => [`${from} ${to} 301`, `${withSlash(from)} ${to} 301`]),
+          ...Object.entries(pathRedirectMap).flatMap(([from, to]) => [`${from} ${to} 301`, `${withSlash(from)} ${to} 301`]),
         ]
         await writeFile(`${nitro.options.output.publicDir}/_redirects`, `${lines.join('\n')}\n`)
       })
@@ -92,7 +97,7 @@ export default defineNuxtConfig({
   // Cart, account and auth pages are fully client-state driven (persisted cart, cookies, token) and not indexable:
   // render them client-side only. Vue 3 does not patch mismatched attributes on hydration like Vue 2 did.
   routeRules: {
-    ...Object.fromEntries(Object.entries(redirectMap).flatMap(([from, to]) => [
+    ...Object.fromEntries(Object.entries(pathRedirectMap).flatMap(([from, to]) => [
       [from, { redirect: { to, statusCode: 301 } }],
       [withSlash(from), { redirect: { to, statusCode: 301 } }],
     ])),

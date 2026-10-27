@@ -108,8 +108,6 @@ const attributesData = ref({});
 
 onMounted(async () => {
     bundleProductData.value = await store.getBundleItem;
-    console.log('bundleProductData', bundleProductData.value);
-    
     setBundleOptions();
 });
 
