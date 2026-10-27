@@ -1512,9 +1512,10 @@ async function restoreShallow(lastPage, limitArg, scrollY, productUrlKey) {
   }
 }
 // Measured row heights can shift after the first jump, so scroll again once they settle.
+// Centered, because with 'start' the sticky results/filter bar covers the top of the row.
 function scrollGridToRow(rowIndex) {
-  gridVirtualizer.value.scrollToIndex(rowIndex, { align: 'start' });
-  setTimeout(() => gridVirtualizer.value.scrollToIndex(rowIndex, { align: 'start' }), 250);
+  gridVirtualizer.value.scrollToIndex(rowIndex, { align: 'center' });
+  setTimeout(() => gridVirtualizer.value.scrollToIndex(rowIndex, { align: 'center' }), 250);
 }
 function finishRestoration(scrollY, productUrlKey) {
   nextTick(() => {
@@ -1535,11 +1536,10 @@ function finishRestoration(scrollY, productUrlKey) {
         rowIndex = rowIndex > 7 ? rowIndex - 7 : rowIndex;
       }
 
-      if (isMobile.value) {
-        rowIndex = rowIndex - 2;
+      // Grid rows are centered; this offset only applies to the list view
+      if (isMobile.value && viewMode.value !== 'grid' && rowIndex > 0) {
+        rowIndex = Math.max(rowIndex - 2, 0);
       }
-
-      console.log('rowIndex', rowIndex, 'PRODUCT URL KEY', productUrlKey);
 
       if (rowIndex !== -1) {
         nextTick(() => {
