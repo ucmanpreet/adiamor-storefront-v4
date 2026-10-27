@@ -61,3 +61,6 @@ vite.config.*.timestamp-*
 # Debug artifacts
 debug/
 *.stackdump
+
+#test files
+tests/
