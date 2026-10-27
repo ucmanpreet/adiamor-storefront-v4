@@ -190,6 +190,9 @@ const router = useRouter();
 const { $bus, $formatPrice } = useNuxtApp();
 
 const bundleSteps = ref([]);
+// Families without their own SVG reuse a close icon (e.g. rings_and_bands has no svg file)
+const FAMILY_SVG = { rings_and_bands: 'engagement_rings_family' };
+const familySvg = (code) => FAMILY_SVG[code] ?? code;
 const configProduct = ref(null);
 const simpleProduct = ref(null);
 const shortenText = ref({
@@ -249,13 +252,13 @@ const getSvgIfSearchPage = computed(() => {
 });
 const completeSettingSVGName = computed(() => {
 	if (props.product && props.product?.type == 'configurable') {
-		return `complete_${props.product?.attribute_family_code}`;
+		return `complete_${familySvg(props.product?.attribute_family_code)}`;
 	}
 	let configEl = bundleSteps.value.find((el) => el.type == 'configurable' && el.data);
-	return configEl && configEl?.data ? `complete_${configEl?.data?.attribute_family_code}` : `complete_${getSvgIfSearchPage.value}`;
+	return configEl && configEl?.data ? `complete_${familySvg(configEl?.data?.attribute_family_code)}` : `complete_${getSvgIfSearchPage.value}`;
 });
 const getSettingSvg = computed(() => {
-	if (props.product?.type != 'simple' && props.product?.attribute_family_code) return props.product?.attribute_family_code;
+	if (props.product?.type != 'simple' && props.product?.attribute_family_code) return familySvg(props.product?.attribute_family_code);
 	return getSvgIfSearchPage.value;
 });
 const checkBundleRoute = computed(() => route.name == 'yourSettingPage');
@@ -392,7 +395,7 @@ function checkRouteCondition(item) {
 	return false;
 }
 function getTrimmedValue(data) {
-	return (data ? `${data.attribute_family_code}${data?.type == 'simple' ? pairLabel.value : ''}` : props.product ? `${props.product?.attribute_family_code}` : 'engagement_ring_family').trim();
+	return (data ? `${familySvg(data.attribute_family_code)}${data?.type == 'simple' ? pairLabel.value : ''}` : props.product ? `${familySvg(props.product?.attribute_family_code)}` : 'engagement_ring_family').trim();
 }
 function redirectToItem(data = null) {
 	if (data && data?.url_key) {
