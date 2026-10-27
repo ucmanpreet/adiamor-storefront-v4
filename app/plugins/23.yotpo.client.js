@@ -22,7 +22,8 @@ export default defineNuxtPlugin((nuxtApp) => {
   })
 
   router.afterEach(async (to, from) => {
-    if (to.name === from.name) return
+    // Product pages all share the route name 'all', so compare paths: product -> product must re-init too
+    if (to.path === from.path) return
     if (to.name === 'all') {
       await waitForProductAndDOM()
       initWidgets()
