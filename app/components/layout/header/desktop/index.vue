@@ -267,7 +267,7 @@ const shapeData = ref(null);
 const suppressClose = ref(false);
 const recaptchaActive = ref(false);
 
-watch(() => store.wishList.length, () => {
+watch(() => store.wishList?.length, () => {
     checkWishlistCount();
 });
 watch(() => store.cartItems.length, () => {

@@ -381,8 +381,8 @@ export const useMainStore = defineStore('main', {
       },
       setWishList(payload = null) {
         if (payload && payload.sku) {
-            // if(typeof this.wishList != 'array') this.wishList = [];
-            let wishList = this.wishList || [];
+            // New array, not an in-place push/splice: the list is markRaw, so only a new reference reaches watchers
+            let wishList = [...(this.wishList || [])];
             const index = wishList && wishList.length ? wishList?.findIndex(item => item.sku === payload.sku) : -1;
             if (payload?.isChecked) {
               if (index === -1) {
@@ -398,7 +398,8 @@ export const useMainStore = defineStore('main', {
           this.wishList = markRaw(wishList);
           return;
         }
-        this.wishList = markRaw(payload);
+        // Clearing (no payload) leaves an empty list: watchers read `wishList.length`
+        this.wishList = markRaw(payload ?? []);
       },
       setFilterList(payload = null) {
         if (payload?.state) {
@@ -420,8 +421,8 @@ export const useMainStore = defineStore('main', {
       },
       setLoggedInWishListData(payload = null) {
         if (payload && payload.sku) {
-            // if(typeof this.wishList != 'array') this.wishList = [];
-            let wishList = this.loggedInWishList || [];
+            // New array, not an in-place push/splice: the list is markRaw, so only a new reference reaches watchers
+            let wishList = [...(this.loggedInWishList || [])];
             const index = wishList && wishList.length ? wishList?.findIndex(item => item.sku === payload.sku) : -1;
             if (payload?.isChecked) {
               if (index === -1) {
@@ -437,7 +438,8 @@ export const useMainStore = defineStore('main', {
           this.loggedInWishList = markRaw(wishList);
           return;
         }
-        this.loggedInWishList = markRaw(payload);
+        // Clearing / logout (no payload) leaves an empty list: watchers read `loggedInWishList.length`
+        this.loggedInWishList = markRaw(payload ?? []);
       },
       setPhoneNumber(payload = null) {
         return this.phoneNumber = markRaw(payload);

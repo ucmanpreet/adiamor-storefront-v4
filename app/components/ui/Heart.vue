@@ -71,10 +71,10 @@ const alredayPresent = ref(false);
 
 const getItemSku = computed(() => props.selectedVariant?.sku || props.item?.sku || 'unknown');
 
-watch(() => store.wishList.length, () => {
+watch(() => store.wishList?.length, () => {
     assignData();
 });
-watch(() => store.loggedInWishList.length, () => {
+watch(() => store.loggedInWishList?.length, () => {
     assignData();
 });
 
