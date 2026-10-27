@@ -64,3 +64,13 @@ debug/
 
 #test files
 tests/
+test-results/
+
+#md files 
+MIGRATION-STATUS.md
+PLUGIN-VETTING-ANALYSIS.md
+
+#playwright files
+playwright.a11y.config.ts
+playwright.proto.config.ts
+playwright.smoke.config.ts
