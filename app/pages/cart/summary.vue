@@ -1339,7 +1339,9 @@ async function prongSubmit() {
 
     //Passing Vraiant Id along with prong-data
     let selectedItem = cartItems.value[index].product.variant_map[item?.selected_center_stone?.toLowerCase()];
-    await updateCartApi(index, { prong_fitting: cartItems.value[index].prong_fitting, product_id: selectedItem, isProngUpdated: true });
+    // Snapshot the values now: closing the ProngModal (FocusTrap deactivate -> closeModal) clears prong_type on the live object
+    let prongFitting = { ...cartItems.value[index].prong_fitting };
+    await updateCartApi(index, { prong_fitting: prongFitting, product_id: selectedItem, isProngUpdated: true });
 
     nextTick(() => {
         const btn = dynamicRefs[`removeProng-${index}`];
