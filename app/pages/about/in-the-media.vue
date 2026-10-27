@@ -546,7 +546,7 @@
             aria-modal="true"
             aria-labelledby="video-modal-heading"
         >
-            <div class="aspect-video overflow-hidden">s
+            <div class="aspect-video overflow-hidden">
                 <iframe
                     v-if="videoId"
                     ref="videoFrame"

@@ -16,9 +16,9 @@
           data-learnmore-show="false"
         ></span>
       </div>
+      <span class="pb-0.5 px-1">or</span>
     </template>
     <template v-if="!hidePaypal">
-      <span class="pb-0.5 px-1">or</span>
       <div class="w-28 flex items-center flex-none">
         <NuxtLink :to="flexibleFinancePath">
           <img
