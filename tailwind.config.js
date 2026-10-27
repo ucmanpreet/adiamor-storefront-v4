@@ -3,18 +3,20 @@
 // const colors = require('tailwindcss/colors')
 
 module.exports = {
+  // Nuxt 4 keeps the sources under app/ (srcDir). Class strings in app/static/js (e.g. diamondDimensions.js) are
+  // only generated if that folder is listed here.
   content: [
-    "./components/**/*.{js,vue,ts}",
-    "./components/common/**/*.{js,vue,ts}",
-    "./layouts/**/*.vue",
-    "./pages/**/*.vue",
-    "./plugins/**/*.{js,ts}",
+    "./app/components/**/*.{js,vue,ts}",
+    "./app/layouts/**/*.vue",
+    "./app/pages/**/*.vue",
+    "./app/plugins/**/*.{js,ts}",
+    "./app/app.vue",
     "./nuxt.config.{js,ts}",
-    "./assets/css/main.css",
-    "./assets/**/*.svg",
-    "./mixin/**/*.js",
-    "./utils/**/*.js",
-    "./static/**/*.js",
+    "./app/assets/css/main.css",
+    "./app/assets/**/*.svg",
+    "./app/mixin/**/*.js",
+    "./app/utils/**/*.js",
+    "./app/static/**/*.js",
   ],
   theme: {
     extend: {
