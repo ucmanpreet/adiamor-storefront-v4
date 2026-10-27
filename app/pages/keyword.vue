@@ -51,17 +51,19 @@
                     </article>
                 </div>
                 <div class="max-w-3xl mx-auto prose prose-sm sm:prose-base prose-p:text-sm prose-p:mt-1 prose-ul:list-none prose-ul:pl-0 prose-li:pl-0 prose-li:border-b prose-li:border-gray-200"
-                    v-show="productList && productList.length > 0">
+                    v-if="productList && productList.length > 0">
                     <article aria-labelledby="products-heading">
                         <h2 id="products-heading" class="text-lg font-normal border-b pb-2">Product Search</h2>
-                        <ul role="list">
-                            <li v-for="(item, index) in productList" :key="index">
+                        <ul role="list" ref="productListContainer" :style="{ height: `${productVirtualizer.getTotalSize()}px`, position: 'relative' }">
+                            <li v-for="row in productRows" :key="row.key" :data-index="row.index"
+                                :ref="(el) => productVirtualizer.measureElement(el)"
+                                :style="{ position: 'absolute', top: 0, left: 0, width: '100%', transform: `translateY(${row.start - productScrollMargin}px)` }">
                                 <NuxtLink
-                                    v-if="item.name"
-                                    :to="getRedirectUrl(item)"
+                                    v-if="row.item?.name"
+                                    :to="getRedirectUrl(row.item)"
                                     class="block text-primary hover:text-primary/90 active:text-primary/70 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 py-1"
-                                    @click="$bus.emit('aria-announce', `View product: ${item?.name}`)">
-                                    {{ item?.name }}
+                                    @click="$bus.emit('aria-announce', `View product: ${row.item?.name}`)">
+                                    {{ row.item?.name }}
                                 </NuxtLink>
                             </li>
                         </ul>
@@ -104,6 +106,7 @@ import NoDataFound from '~/components/common/NoDataFound.vue';
 import Button from '~/components/common/Button.vue';
 import { redirectionUrl } from '~/utils/universalHelper.js';
 import { STATIC_ROUTES } from '~/utils/staticRoutes';
+import { useWindowVirtualizer } from '@tanstack/vue-virtual';
 
 const emit = defineEmits(['update:activeDropdown']);
 
@@ -123,6 +126,27 @@ const loading = ref(true);
 const page = ref(1);
 const listLoader = ref(false);
 const totalProducts = ref(0);
+
+// Product results are virtualized on the window; scrollMargin is the list's distance from the top of the document.
+const productListContainer = ref(null);
+const productScrollMargin = ref(0);
+const productVirtualizer = useWindowVirtualizer(computed(() => ({
+    count: productList.value.length,
+    estimateSize: () => 44,
+    overscan: 10,
+    scrollMargin: productScrollMargin.value,
+})));
+const productRows = computed(() => productVirtualizer.value.getVirtualItems().map((row) => ({
+    key: row.key,
+    index: row.index,
+    start: row.start,
+    item: productList.value[row.index],
+})));
+const updateProductScrollMargin = () => {
+    if (!productListContainer.value) return;
+    productScrollMargin.value = productListContainer.value.getBoundingClientRect().top + window.scrollY;
+};
+watch(() => productList.value.length, () => nextTick(updateProductScrollMargin), { flush: 'post' });
 
 const phoneNumber = computed(() => store.phoneNumber);
 const telPhoneNumber = computed(() => store.phoneNumber?.replace(/[^+\d]/g, ''));
