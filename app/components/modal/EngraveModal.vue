@@ -182,13 +182,14 @@ onMounted(() => {
     });
 })
 
-function extractWords() {
-    if (inputText.value.length > 14) {
+// InputField emits `input` before `update:modelValue`, so inputText is still stale here; use the emitted value
+function extractWords(text = inputText.value) {
+    if (text.length > 14) {
         return;
     }
 
     // Replace regular spaces with non-breaking spaces so they're visible in rendering
-    words.value = inputText.value.split("").map(char => char === " " ? "\u00A0" : char);
+    words.value = text.split("").map(char => char === " " ? "\u00A0" : char);
 
     let curvature = 10;
     let angleObj = [];
