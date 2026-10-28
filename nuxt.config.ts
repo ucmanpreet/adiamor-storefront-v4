@@ -103,21 +103,22 @@ export default defineNuxtConfig({
   // Cart, account and auth pages are fully client-state driven (persisted cart, cookies, token) and not indexable:
   // render them client-side only. Vue 3 does not patch mismatched attributes on hydration like Vue 2 did.
   routeRules: {
-    ...Object.fromEntries(Object.entries(pathRedirectMap).flatMap(([from, to]) => [
-      [from, { redirect: { to, statusCode: 301 } }],
-      [withSlash(from), { redirect: { to, statusCode: 301 } }],
-    ])),
-    '/cart/**': { ssr: false },
-    '/auth/**': { ssr: false },
-    '/my-account/**': { ssr: false },
-    '/wishlist/**': { ssr: false },
-    '/thankyou/**': { ssr: false },
-    // Dynamic URLs are served from the SPA fallback (200.html) in production, never pre-rendered
-    '/search/**': { ssr: false },
-    ...Object.fromEntries(
-      [...new Set(Object.values(STATIC_ROUTES).map((u: any) => String(u).match(/^\/([\w-]+)\/search\//i)?.[1]).filter(Boolean))].map((seg) => [`/${(seg as string).toLowerCase()}/search/**`, { ssr: false }]),
-    ),
-  },
+  ...Object.fromEntries(
+    Object.entries(pathRedirectMap).map(([from, to]) => [
+      from,
+      { redirect: { to, statusCode: 301 } },
+    ]),
+  ),
+  '/cart/**': { ssr: false },
+  '/auth/**': { ssr: false },
+  '/my-account/**': { ssr: false },
+  '/wishlist/**': { ssr: false },
+  '/thankyou/**': { ssr: false },
+  '/search/**': { ssr: false },
+  ...Object.fromEntries(
+    [...new Set(Object.values(STATIC_ROUTES).map((u: any) => String(u).match(/^\/([\w-]+)\/search\//i)?.[1]).filter(Boolean))].map((seg) => [`/${(seg as string).toLowerCase()}/search/**`, { ssr: false }]),
+  ),
+},
 
   nitro: {
     // Same as Nuxt 2 `generate`: every explicit static route is pre-rendered, dynamic URLs fall back to the SPA shell (200.html)
