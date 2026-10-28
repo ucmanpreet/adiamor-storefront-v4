@@ -169,7 +169,8 @@ const fetchQueue = ref([]);
 const isRestoredFromSession = ref(false);
 const queryString = ref(null);
 const pageCursors = ref([]);
-const selectedVariants = ref([]);
+// Keyed by setting sku; an object (not an array) so JSON.stringify keeps the keys when the route state is saved
+const selectedVariants = ref({});
 const customSearchPath = ref(STATIC_ROUTES.CUSTOM_SEARCH);
 const firedProducts = new Set();
 let _lastFiredSku = null;
@@ -388,8 +389,10 @@ async function restoreShallow(lastPage, limitArg, scrollY, productUrlKey) {
 function finishRestoration(scrollY, productUrlKey) {
     nextTick(() => {
         setTimeout(() => {
+            // productUrlKey is the route path (trailing slash); item.url_key has none
+            const trimSlash = (url) => url?.replace(/\/$/, '');
             let rowIndex = chunkedFilteredList.value.findIndex(row =>
-                row.data.some(item => item.url_key === productUrlKey)
+                row.data.some(item => trimSlash(item.url_key) === trimSlash(productUrlKey))
             )
 
             if (isMobile.value) {
@@ -990,7 +993,7 @@ onMounted(async () => {
         queryString.value = saved.query;
         pageCursors.value = saved.pageCursors;
         cursorToken.value = saved.pageCursors[saved.pageCursors?.length - 1];
-        selectedVariants.value = saved.selectedVariants;
+        selectedVariants.value = saved.selectedVariants ?? {};
 
 
         restoreInfiniteList(saved.page, saved.limit, saved.scrollY, saved.productUrlKey);

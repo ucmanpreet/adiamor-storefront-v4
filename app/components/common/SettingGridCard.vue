@@ -293,6 +293,12 @@ function handleMouseLeave() {
   }
 }
 
+// Restore the variant the shopper picked before leaving the list. This must run before the immediate watcher below:
+// that watcher emits setDefaultVariant, which would overwrite the saved sku in the parent with the default variant.
+if (props.selectedVariants && props.selectedVariants?.[props.setting?.sku]) {
+  selectedVariant.value = getItemVariants.value.find(variant => variant?.sku == props.selectedVariants?.[props.setting?.sku]) ?? null;
+}
+
 // Immediate watchers run during setup (same as the Options API `created` phase)
 watch(() => store.filterCount, () => {
   assignData();
@@ -303,9 +309,6 @@ watch(selectedCode, () => {
 }, { deep: true, immediate: true });
 
 onMounted(() => {
-  if (props.selectedVariants && props.selectedVariants?.[props.setting?.sku]) {
-    selectedVariant.value = getItemVariants.value.find(variant => variant?.sku == props.selectedVariants?.[props.setting?.sku]);
-  }
   assignData(props.filterData);
 });
 </script>
