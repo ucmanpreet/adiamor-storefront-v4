@@ -74,5 +74,3 @@ PLUGIN-VETTING-ANALYSIS.md
 playwright.a11y.config.ts
 playwright.proto.config.ts
 playwright.smoke.config.ts
-# Vercel
-.vercel
