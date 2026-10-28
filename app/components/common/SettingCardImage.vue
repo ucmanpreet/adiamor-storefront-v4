@@ -20,6 +20,7 @@
       className="block object-contain w-full h-full transition-opacity duration-300 ease-in-out mix-blend-multiply focus-within:ring-2 focus-within:ring-primary"
       :classDynamic="[{ 'md:group-hover:opacity-0': images[1] && images[1] !== null, 'md:group-focus-within:opacity-0': images[1] && images[1] !== null }, 'rounded-md']"
       aria-hidden="true"
+      :transformWidth="640"
       decoding="async" loading="lazy"
     />
 
@@ -30,6 +31,7 @@
       :alt="item.name + ' alternate product view'"
       className="hidden md:block absolute inset-0 w-full h-full object-contain opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100 mix-blend-multiply group-focus-within:opacity-100"
       aria-hidden="true"
+      :transformWidth="640"
       decoding="async" loading="lazy"
     />
   </NuxtLink>

@@ -20,7 +20,7 @@
     </div>
      <div class="h-full"
       v-else :class="parentClass ? parentClass : ''" :style="bgColor ? { backgroundColor: bgColor } : {}">
-        <img :src="getValidSrc(src)" :alt="getAlt(alt)" :title="alt" @error="fallbackImage"
+        <img :src="imageSrc" :alt="getAlt(alt)" :title="alt" @error="fallbackImage" :loading="loading" :decoding="decoding"
             :class="[className, classDynamic, maxWidthClass]" :height="height" :width="width"
             :tabindex="tabIndex !== undefined ? tabIndex : null" :style="hasSampleStyle"/>
     </div>
@@ -84,6 +84,20 @@ const props = defineProps({
     gradient: {
         type: Boolean,
         default: false
+    },
+    // Declared as props so they reach the <img>; undeclared attrs fall through to the wrapper div
+    loading: {
+        type: String,
+        default: undefined
+    },
+    decoding: {
+        type: String,
+        default: undefined
+    },
+    // Asks the image CDN for a rendition this wide (px) instead of the full-size original
+    transformWidth: {
+        type: Number,
+        default: 0
     }
 });
 
@@ -121,4 +135,10 @@ function getValidSrc(src) {
     if (src && typeof src === 'string') return src;
     return fetchFirstProductImage(src);
 }
+const imageSrc = computed(() => {
+    const url = getValidSrc(props.src);
+    // Only CDN product images take the transform; local assets and URLs that already carry one are left alone
+    if (!props.transformWidth || typeof url !== 'string' || !url.includes('cdn.adiamor.com') || /[?&]tr=/.test(url)) return url;
+    return `${url}${url.includes('?') ? '&' : '?'}tr=w-${props.transformWidth},q-80`;
+});
 </script>
