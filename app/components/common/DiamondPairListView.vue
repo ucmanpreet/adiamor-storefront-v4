@@ -64,9 +64,6 @@
             <span class="inline-flex ml-1">Ships Soon</span>
           </Tooltip>
           <div class="flex items-center justify-center gap-4">
-            <CompareButton :item="product" :isPair="true" class="flex items-center sm:!hidden" :key="item.sku">
-              <span class="inline-flex ml-1 uppercase">Compare</span>
-            </CompareButton>
             <CreateBundle :item="product" type="diamond-pair" class="flex items-center sm:!hidden gap-2 py-1 px-6 border border-gray-200 text-primary uppercase" :key="item.sku" :disabled="!getInStockKey">
               <span class="inline-flex ml-1 uppercase"> Select </span>
             </CreateBundle>
