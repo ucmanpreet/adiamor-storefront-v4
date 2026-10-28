@@ -205,7 +205,8 @@ import TabComponent from "~/components/ui/TabComponent.vue";
 import CustomLoader from "~/components/ui/CustomLoader.vue";
 import NoDataFound from "~/components/common/NoDataFound.vue";
 import ContactLink from "~/components/common/ContactLink.vue";
-import EmailAFriend from "~/components/modal/EmailAFriend.vue";
+// Modals load when first opened
+const EmailAFriend = defineAsyncComponent(() => import("~/components/modal/EmailAFriend.vue"));
 import { correctUrl, showStrikeThroughPrice, fetchPriceData, skuToDisplay, productRedirection, getCategoryType, urlWithCategory, getGTMProductImage } from "~/utils/universalHelper.js";
 import MediaImage from "~/components/common/MediaImage.vue";
 import { STATIC_ROUTES } from "~/utils/staticRoutes";

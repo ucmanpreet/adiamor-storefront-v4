@@ -1,7 +1,6 @@
 // vee-validate 4 rules and messages.
 import { configure, defineRule } from 'vee-validate'
 import { email, min, required } from '@vee-validate/rules'
-import { postcodeValidator } from 'postcode-validator'
 import { generateMessage } from '~/utils/veeCompat.js'
 
 // vee-validate 2 skipped non-required rules for empty values
@@ -14,9 +13,11 @@ export default defineNuxtPlugin((nuxtApp) => {
   defineRule('email', email)
   defineRule('min', min)
 
-  defineRule('postcode', (value, [country]) => {
+  // postcode-validator carries a regex table for every country: fetch it the first time a postcode is validated
+  defineRule('postcode', async (value, [country]) => {
     if (isEmpty(value)) return true
     try {
+      const { postcodeValidator } = await import('postcode-validator')
       return postcodeValidator(value, country ?? countryCode)
     } catch (e) {
       return false

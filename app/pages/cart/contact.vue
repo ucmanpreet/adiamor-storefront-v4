@@ -532,7 +532,8 @@ import UniversalDropdown from "~/components/ui/UniversalDropdown.vue";
 import CartSubmitButton from "~/components/checkout/CartSubmitButton.vue";
 import OrderSummary from "~/components/checkout/OrderSummary.vue";
 import OrderSummarySkeleton from "~/components/skeleton/OrderSummarySkeleton.vue";
-import FedexModal from "~/components/modal/FedexModal.vue";
+// Modals load when first opened
+const FedexModal = defineAsyncComponent(() => import("~/components/modal/FedexModal.vue"));
 import Icon from "~/components/common/Icon.vue";
 import { createSwalAlert } from '~/composables/useAlert.js'
 import noPostcodeCountries from "~/static/js/noPostcodeCountries.js";

@@ -218,8 +218,9 @@ import Button from '~/components/common/Button.vue';
 import Heart from '~/components/ui/Heart.vue';
 import Icon from '~/components/common/Icon.vue';
 import ProductOrderDetails from '~/components/product/ProductOrderDetails.vue';
-import EmailAFriend from '~/components/modal/EmailAFriend.vue';
-import AskAQuestion from '~/components/modal/AskAQuestion.vue';
+// Modals load when first opened
+const EmailAFriend = defineAsyncComponent(() => import('~/components/modal/EmailAFriend.vue'));
+const AskAQuestion = defineAsyncComponent(() => import('~/components/modal/AskAQuestion.vue'));
 import NotAvailable from '~/components/product/NotAvailable.vue';
 import { getCategoryType, getProductImages, getGTMProductImage } from "~/utils/universalHelper";
 import { STATIC_ROUTES } from '~/utils/staticRoutes';

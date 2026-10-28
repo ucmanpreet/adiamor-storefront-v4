@@ -1,6 +1,5 @@
 /* @import './fonts/montserrat.css'; */
 @import './fonts/customFont.css';
-@import 'sweetalert2/dist/sweetalert2.min.css';
 
 /* Skip to main content - visible only on focus for keyboard/screen reader users */
 .skip-link {

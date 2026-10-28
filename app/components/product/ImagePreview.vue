@@ -55,7 +55,8 @@
 
 <script setup>
 import NoImage from "~/components/ui/NoImage.vue";
-import ImagePreviewComponent from "~/components/modal/ImagePreviewComponent.vue";
+// Modals load when first opened
+const ImagePreviewComponent = defineAsyncComponent(() => import("~/components/modal/ImagePreviewComponent.vue"));
 import { fetchFirstProductImage, extractDominantColor } from "~/utils/universalHelper";
 
 const props = defineProps({

@@ -592,8 +592,9 @@ import CartSubmitButton from "~/components/checkout/CartSubmitButton.vue";
 import OrderSummary from "~/components/checkout/OrderSummary.vue";
 import OrderSummarySkeleton from "~/components/skeleton/OrderSummarySkeleton.vue";
 import ProductCarousel from "~/components/product/ProductCarousel.vue";
-import EngraveModal from "~/components/modal/EngraveModal.vue";
-import ProngModal from "~/components/modal/ProngModal.vue";
+// Modals load when first opened
+const EngraveModal = defineAsyncComponent(() => import("~/components/modal/EngraveModal.vue"));
+const ProngModal = defineAsyncComponent(() => import("~/components/modal/ProngModal.vue"));
 import { showStrikeThroughPrice, fetchPriceData, correctUrl, productRedirection, fetchFirstProductImage, getCategoryType } from "~/utils/universalHelper.js";
 import { STATIC_ROUTES } from "~/utils/staticRoutes";
 import KEYS from "~/utils/constant.js";

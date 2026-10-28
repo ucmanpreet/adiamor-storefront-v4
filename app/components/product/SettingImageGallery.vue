@@ -265,8 +265,9 @@ import CompleteLookBanner from '~/components/banners/CompleteLookBanner.vue';
 import Icon from '~/components/common/Icon.vue';
 import ImagePreview from '~/components/product/ImagePreview.vue';
 import SettingIcons from '~/components/product/SettingIcons.vue';
-import ThreeSixtyViewer from '~/components/modal/ThreeSixtyViewer.vue';
-import RequestImage from '~/components/modal/RequestImage.vue';
+// Modals load when first opened
+const ThreeSixtyViewer = defineAsyncComponent(() => import('~/components/modal/ThreeSixtyViewer.vue'));
+const RequestImage = defineAsyncComponent(() => import('~/components/modal/RequestImage.vue'));
 import Slider from '~/components/common/Slider.vue';
 import { getProductImages, fetchFirstProductImage } from '~/utils/universalHelper.js';
 import ImageVideo from './ImageVideo.vue';

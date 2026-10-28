@@ -1,5 +1,9 @@
-import Swal from 'sweetalert2';
-export function createSwalAlert(message, type, isFixed = false) {
+// SweetAlert2 and its stylesheet are fetched on the first alert instead of shipping in the shared bundle
+export async function createSwalAlert(message, type, isFixed = false) {
+            const [{ default: Swal }] = await Promise.all([
+                import('sweetalert2'),
+                import('sweetalert2/dist/sweetalert2.min.css'),
+            ]);
             if(type == 'error') {
                 isFixed = true;
             }
