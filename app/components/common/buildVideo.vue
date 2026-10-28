@@ -1,6 +1,6 @@
 <template>
     <!-- Your Design it, Web build it -->
-    <section class="max-w-7xl mx-auto w-full px-4 lg:px-24 2xl:px-8 pt-8 lg:pt-16" aria-labelledby="design-build-heading">
+    <section ref="section" class="max-w-7xl mx-auto w-full px-4 lg:px-24 2xl:px-8 pt-8 lg:pt-16" aria-labelledby="design-build-heading">
         <div class="relative text-white h-60 md:h-[398px] flex items-center justify-center md:justify-end">
             <!-- Content Overlay -->
             <div class="relative z-10 max-w-md w-full h-full px-4 lg:px-14 space-y-7 flex flex-col justify-center items-center md:items-start after:content-[''] after:absolute after:inset-0 after:bg-[#f6f6f622] after:backdrop-blur-sm after:-z-10 after:brightness-50 text-center md:text-left">
@@ -17,7 +17,7 @@
                 </div>
             </div>
             <!-- Background Video (Decorative) -->
-            <video loop autoplay muted playsinline name="media" tabindex="-1" aria-hidden="true"
+            <video v-if="showVideo" loop autoplay muted playsinline preload="none" name="media" tabindex="-1" aria-hidden="true"
                 class="absolute top-1/2 left-1/2 w-full h-full object-cover -translate-x-1/2 -translate-y-1/2">
                 <source src="https://cdn.adiamor.com/Media/manufacturing.mp4?updatedAt=1747477494232" type="video/mp4">
             </video>
@@ -29,4 +29,24 @@ import Link from "~/components/ui/Link.vue";
 import { STATIC_ROUTES } from "~/utils/staticRoutes";
 
 const ringLink = STATIC_ROUTES.DESIGN_RING;
+
+// The video sits far below the banner: only start downloading it when the section is about to scroll into view
+const section = ref(null);
+const showVideo = ref(false);
+let observer = null;
+
+onMounted(() => {
+    if (!('IntersectionObserver' in window)) {
+        showVideo.value = true;
+        return;
+    }
+    observer = new IntersectionObserver((entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+            showVideo.value = true;
+            observer.disconnect();
+        }
+    }, { rootMargin: '400px 0px' });
+    observer.observe(section.value);
+});
+onBeforeUnmount(() => observer?.disconnect());
 </script>
