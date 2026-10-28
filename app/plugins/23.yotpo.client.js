@@ -10,8 +10,14 @@ export default defineNuxtPlugin((nuxtApp) => {
     }, 500)
   }
 
+  // Gives up after 30 s so a product page that never renders the widget does not poll for the life of the tab
   const waitForProductAndDOM = () => new Promise((resolve) => {
+    let ticks = 0
     const interval = setInterval(() => {
+      if (++ticks > 300) {
+        clearInterval(interval)
+        return
+      }
       const productReady = !!store.product
       const domReady = !!document.querySelector('.yotpo.bottomLine')
       if (productReady && domReady) {

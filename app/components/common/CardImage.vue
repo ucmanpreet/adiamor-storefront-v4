@@ -13,7 +13,7 @@
         class="absolute h-auto whitespace-nowrap border border-gray-200 bg-black/70 text-white backdrop-blur-sm rounded-full py-1.5 px-3 z-10">
         {{ lang.outOfStock }} </p>
       <MediaImage v-if="primartyImage" :src="primartyImage" :alt="item?.name ? item.name : 'Product image'" class="w-full h-full object-cover mix-blend-multiply"
-        :class="[{ 'p-4': type == 'setting' }]" fetchpriority="high" />
+        :class="[{ 'p-4': type == 'setting' }]" />
     </NuxtLink>
 
     <!-- Fallback image -->

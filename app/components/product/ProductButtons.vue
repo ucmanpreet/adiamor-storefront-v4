@@ -265,7 +265,7 @@ function onAddToCartResponse(data) {
 }
 
 onMounted(() => {
-    window.addEventListener('scroll', checkButtonVisibility);
+    window.addEventListener('scroll', checkButtonVisibility, { passive: true });
     $bus.on('addToCartResponse', onAddToCartResponse);
 });
 
