@@ -104,20 +104,13 @@ export default defineNuxtConfig({
   // render them client-side only. Vue 3 does not patch mismatched attributes on hydration like Vue 2 did.
   routeRules: {
   ...Object.fromEntries(
-    Object.entries(pathRedirectMap).map(([from, to]) => [
-      from,
-      { redirect: { to, statusCode: 301 } },
-    ]),
-  ),
-  '/cart/**': { ssr: false },
-  '/auth/**': { ssr: false },
-  '/my-account/**': { ssr: false },
-  '/wishlist/**': { ssr: false },
-  '/thankyou/**': { ssr: false },
-  '/search/**': { ssr: false },
-  ...Object.fromEntries(
-    [...new Set(Object.values(STATIC_ROUTES).map((u: any) => String(u).match(/^\/([\w-]+)\/search\//i)?.[1]).filter(Boolean))].map((seg) => [`/${(seg as string).toLowerCase()}/search/**`, { ssr: false }]),
-  ),
+    Object.entries(pathRedirectMap)
+        .filter(([from]) => from !== '/education/glossary')
+        .map(([from, to]) => [
+          from,
+          { redirect: { to, statusCode: 301 } },
+        ]),
+    ),
 },
 
   nitro: {
