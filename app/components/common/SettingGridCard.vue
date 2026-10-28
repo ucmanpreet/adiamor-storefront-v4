@@ -247,10 +247,16 @@ function assignData(filters = null){
     }
   }
 }
+// The shopper picked a variant in the dropdown: it sticks until they pick another one.
 function assignVariantData(variant) {
   selectedVariant.value = variant;
+  reportVariant(variant, false);
+}
+// The default variant is NOT stored in selectedVariant: it must follow the active filters (e.g. a metal picked after
+// the card was already rendered), which only works while the value is still computed.
+function reportVariant(variant, isDefault) {
   if(variant?.sku) {
-    emit('setDefaultVariant', {sku : props.setting?.sku, variant});
+    emit('setDefaultVariant', {sku : props.setting?.sku, variant, isDefault});
   }
   let setting = JSON.parse(JSON.stringify(props.setting));
   setting['selectedVariant'] = variant;
@@ -306,15 +312,20 @@ watch(() => store.filterCount, () => {
 }, { deep: true, immediate: true });
 
 watch(selectedCode, () => {
-  assignVariantData(selectedVariantValue.value);
+  reportVariant(selectedVariantValue.value, true);
 }, { deep: true, immediate: true });
+
+// Keep the parent's record of the shown variant current when the filters change it
+watch(() => selectedVariantValue.value?.sku, (sku) => {
+  if (sku && !selectedVariant.value) emit('setDefaultVariant', { sku: props.setting?.sku, variant: selectedVariantValue.value, isDefault: true });
+});
 
 onMounted(() => {
   assignData(props.filterData);
 });
-</script>
 
 // <model-viewer> is only needed by cards that have a 3D model
 watch(checkGLBPresent, (glb) => {
   if (glb && import.meta.client) loadScript(MODEL_VIEWER_SRC, { module: true }).catch(() => {});
 }, { immediate: true });
+</script>

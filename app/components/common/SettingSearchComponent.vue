@@ -71,7 +71,7 @@
                                                     </div>
                                                     <SettingGridCard v-else :key="setting?.sku" :setting="setting"
                                                         @setDefaultVariant="setVariantData"
-                                                        :selectedVariants="selectedVariants" 
+                                                        :selectedVariants="pickedVariants" 
                                                         v-model:filterData="filterData"/>
                                                 
                                             </div>
@@ -170,7 +170,8 @@ const isRestoredFromSession = ref(false);
 const queryString = ref(null);
 const pageCursors = ref([]);
 // Keyed by setting sku; an object (not an array) so JSON.stringify keeps the keys when the route state is saved
-const selectedVariants = ref({});
+const selectedVariants = ref({});   // variant shown on every card (analytics)
+const pickedVariants = ref({});     // variants the shopper chose in a card dropdown (restored when coming back)
 const customSearchPath = ref(STATIC_ROUTES.CUSTOM_SEARCH);
 const firedProducts = new Set();
 let _lastFiredSku = null;
@@ -332,6 +333,7 @@ function fireEvent() {
 }
 function setVariantData(data) {
     selectedVariants.value[data?.sku] = data?.variant?.sku;
+    if (!data?.isDefault) pickedVariants.value[data?.sku] = data?.variant?.sku;
 }
 function getRouteState() {
     return {
@@ -341,7 +343,7 @@ function getRouteState() {
         scrollY: window.scrollY,
         query: queryString.value,
         pageCursors: pageCursors.value,
-        selectedVariants: selectedVariants.value
+        selectedVariants: pickedVariants.value
     }
 }
 async function restoreInfiniteList(lastPage, limitArg, scrollY, productUrlKey) {
@@ -993,7 +995,7 @@ onMounted(async () => {
         queryString.value = saved.query;
         pageCursors.value = saved.pageCursors;
         cursorToken.value = saved.pageCursors[saved.pageCursors?.length - 1];
-        selectedVariants.value = saved.selectedVariants ?? {};
+        pickedVariants.value = saved.selectedVariants ?? {};
 
 
         restoreInfiniteList(saved.page, saved.limit, saved.scrollY, saved.productUrlKey);
