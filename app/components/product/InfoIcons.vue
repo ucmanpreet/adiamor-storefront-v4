@@ -26,7 +26,7 @@
           @close="closeModal"
           maxWidthClass="max-w-sm"
         >
-          <div class="-mt-6">
+          <div class="sm:-mt-6">
             {{ staticInfoData[code] }}
           </div>
         </Modal>

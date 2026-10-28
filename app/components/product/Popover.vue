@@ -9,7 +9,7 @@
         @keydown.esc.prevent="closeModal"
     >
         <div class="flex items-start justify-between gap-2" v-if="heading">
-            <h3 :id="`popover-heading-${uid}`" class="!font-medium pb-2 text-base text-current">{{ heading }}</h3>
+            <h3 :id="`popover-heading-${uid}`" class="!font-medium !mt-0 pb-2 text-base text-current">{{ heading }}</h3>
             <button
                 type="button"
                 class="flex-shrink-0 text-xl text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded"
