@@ -1,6 +1,6 @@
 <template>
     <!-- Photos From Our Community -->
-		<section class="pt-8 lg:pt-16" role="region"
+		<section ref="section" class="pt-8 lg:pt-16" role="region"
             aria-labelledby="community-photos-heading"
         >
 			<div class="pb-8 lg:pb-16 bg-primary flex flex-col justify-center">
@@ -19,7 +19,7 @@
                     </p>
 
 					<!-- PhotoGrid -->
-					<ClientOnly><div
+					<ClientOnly><div v-if="showWidget"
                         class="yotpo yotpo-pictures-widget yotpo-size-6"
                         role="group"
                         aria-label="Customer community photo gallery"
@@ -69,6 +69,38 @@ const props = defineProps(['type']);
 const socialMediaPath = STATIC_ROUTES.SOCIAL_MEDIA_GALLERY;
 
 const isHomeView = computed(() => props.type === 'home');
+
+// The Yotpo widget renders about 1,700 elements (most of them a hidden lightbox), so it is mounted only
+// when the section nears the viewport and then initialised, since the global plugin runs before it exists.
+const section = ref(null);
+const showWidget = ref(false);
+let observer = null;
+
+function initWidgetWhenReady(attempts = 0) {
+  const yotpo = window.yotpo;
+  const legacy = window.yotpoWidgetsContainer;
+  if (typeof yotpo?.initWidgets === 'function') yotpo.initWidgets();
+  if (typeof legacy?.initWidgets === 'function') legacy.initWidgets();
+  if (typeof yotpo?.initWidgets !== 'function' && typeof legacy?.initWidgets !== 'function' && attempts < 10) {
+    setTimeout(() => initWidgetWhenReady(attempts + 1), 1000);
+  }
+}
+
+onMounted(() => {
+  if (!('IntersectionObserver' in window)) {
+    showWidget.value = true;
+    return;
+  }
+  observer = new IntersectionObserver(([entry]) => {
+    if (!entry.isIntersecting) return;
+    observer.disconnect();
+    showWidget.value = true;
+    nextTick(() => initWidgetWhenReady());
+  }, { rootMargin: '600px 0px' });
+  observer.observe(section.value);
+});
+
+onBeforeUnmount(() => observer?.disconnect());
 </script>
 
 <style scoped>
