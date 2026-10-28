@@ -15,16 +15,17 @@ export const head = {
       { rel: 'apple-touch-icon', sizes: '180x180', href: 'https://cdn.adiamor.com/landing-pages/icons/apple-touch-icon.png' },
       { rel: 'manifest', href: '/site.webmanifest' },
       
+      // icon_names must stay alphabetical and list every Material Symbol used in templates (add_card, credit_card, local_atm, smartphone)
       {
         rel: 'preload',
-        href: 'https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,300,0,0&display=swap',
+        href: 'https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,300,0,0&icon_names=add_card,credit_card,local_atm,smartphone&display=swap',
         as: 'style',
         crossorigin: 'anonymous',
         onload: "this.onload=null;this.rel='stylesheet'"
       },
       {
         rel: 'preload',
-        href: 'https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Tangerine:wght@400;700&display=swap',
+        href: 'https://fonts.googleapis.com/css2?family=Outfit:wght@200..700&family=Tangerine:wght@400;700&display=swap',
         as: 'style',
         crossorigin: "anonymous",
         onload: "this.onload=null;this.rel='stylesheet'"
