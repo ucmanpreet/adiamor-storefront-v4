@@ -73,7 +73,7 @@ export default defineNuxtConfig({
     'nitro:init'(nitro: any) {
       nitro.hooks.hook('prerender:done', async () => {
         const lines = [
-          ...Object.entries(pathRedirectMap).flatMap(([from, to]) => [`${from} ${to} 301`, `${withSlash(from)} ${to} 301`]),
+          ...Object.entries(pathRedirectMap).flatMap(([from, to]) => [`${from} ${to} 301`]),
         ]
         await writeFile(`${nitro.options.output.publicDir}/_redirects`, `${lines.join('\n')}\n`)
       })
