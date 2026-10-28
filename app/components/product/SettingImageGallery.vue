@@ -268,7 +268,7 @@ import SettingIcons from '~/components/product/SettingIcons.vue';
 import ThreeSixtyViewer from '~/components/modal/ThreeSixtyViewer.vue';
 import RequestImage from '~/components/modal/RequestImage.vue';
 import Slider from '~/components/common/Slider.vue';
-import { getProductImages } from '~/utils/universalHelper.js';
+import { getProductImages, fetchFirstProductImage } from '~/utils/universalHelper.js';
 import ImageVideo from './ImageVideo.vue';
 import Button from '../common/Button.vue';
 
@@ -318,6 +318,21 @@ watch(() => props.selectedVariant?.sku, () => {
 watch(mainImageKey, () => {
     emit('callGTMEvent');
 });
+
+// Each slide only starts downloading once it mounts (ImagePreview), i.e. after the click on next/prev.
+// Fetch the rest of the set as soon as it is shown so the browser cache already has them.
+const preloaded = new Set();
+function preloadSlides() {
+    if (!import.meta.client || !Array.isArray(mainImage.value)) return;
+    mainImage.value.forEach((item) => {
+        if ((item?.path || item?.url || '').toLowerCase().includes('.mp4')) return;
+        const url = fetchFirstProductImage([item]);
+        if (!url || typeof url !== 'string' || preloaded.has(url)) return;
+        preloaded.add(url);
+        new Image().src = url;
+    });
+}
+watch(mainImage, preloadSlides, { flush: 'post' });
 
 watch(selectedIndex, () => {
     emit('callGTMEvent');
