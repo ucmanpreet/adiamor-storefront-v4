@@ -42,7 +42,7 @@
                         <div class="flex gap-4 pt-2 pb-6 text-sm range-slider-padding">
                             <IconFilter v-if="filter?.type == 'icon' && filter.value.length" :filter="filter"
                                 className="pt-2 -my-2 grid grid-cols-4 gap-y-1 gap-x-2 w-full"
-                             @setMobileFilters="setMobileState" :selectedFilterValue="getFilterValue(filter?.code)"/>
+                             @setMobileFilters="setMobileState" deferOnMobile :selectedFilterValue="getFilterValue(filter?.code)"/>
                             <ColorPallete v-if="filter?.type == 'color_pattern' && filter.value.length" :filter="filter"
                                 :showName="true" @setMobileFilters="setMobileState" :selectedFilterValue="getFilterValue(filter?.code)"/>
                             <CombinedRadioCheckbox
@@ -87,7 +87,7 @@
                           <div class="flex gap-4 pt-2 pb-6 text-sm range-slider-padding">
                               <IconFilter v-if="filter?.type == 'icon' && filter.value.length" :filter="filter"
                                   className="pt-2 -my-2 grid grid-cols-4 gap-y-1 gap-x-2 w-full"
-                               @setMobileFilters="setMobileState" :selectedFilterValue="getFilterValue(filter?.code)"/>
+                               @setMobileFilters="setMobileState" deferOnMobile :selectedFilterValue="getFilterValue(filter?.code)"/>
                               <ColorPallete v-if="filter?.type == 'color_pattern' && filter.value.length" :filter="filter"
                                   :showName="true" @setMobileFilters="setMobileState" :selectedFilterValue="getFilterValue(filter?.code)"/>
                               <CombinedRadioCheckbox

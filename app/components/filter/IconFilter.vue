@@ -41,6 +41,11 @@ const props = defineProps({
   },
   selectedFilterValue: {
     type: [Array, Object],
+  },
+  // Inside the filter drawer on mobile, picks wait for "View Results" instead of hitting the store.
+  deferOnMobile: {
+    type: Boolean,
+    default: false
   }
 });
 const emit = defineEmits(['setMobileFilters']);
@@ -81,7 +86,7 @@ function checkForCenterStone($event, el) {
     if (dataValue && dataValue?.length) {
       if (el?.code == dataValue[0]?.code) {
         selectedValue.value = [];
-        if (!$isMobile) {
+        if (!props.deferOnMobile || !$isMobile) {
           store.setFilters({ key: props.filter.code, value: null });
           store.setFilterCount();
           return;
@@ -134,6 +139,10 @@ function handleInput(event, data) {
   let code = props.filter.code ? props.filter.code : props.filter.name?.toLowerCase().replace(/ /g, '_');
   let dataToSet = selectedValue.value;
   if (Array.isArray(dataToSet) && dataToSet.length == 0) dataToSet = null;
+  if (props.deferOnMobile && $isMobile) {
+    emit('setMobileFilters', { key: code, value: dataToSet });
+    return;
+  }
   store.setFilters({ key: code, value: dataToSet });
   store.setFilterCount();
 }
