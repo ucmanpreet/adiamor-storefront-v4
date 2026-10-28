@@ -25,6 +25,7 @@
 
 <script setup>
 import KEYS from '~/utils/constant.js';
+import { loadScript } from '~/utils/loadScript.js';
 import CustomLoader from '~/components/ui/CustomLoader.vue';
 
 const props = defineProps(['siteKey']);
@@ -48,33 +49,15 @@ onMounted(async () => {
 });
 
 async function loadReCaptcha() {
-    return new Promise((resolve, reject) => {
-        // Prevent duplicate loading
-        if (document.getElementById('recaptcha-script')) {
-            resolve();
-            return;
-        }
-        const script = document.createElement('script');
-        script.id = 'recaptcha-script';
-        script.src = `${KEYS.GOOGLE_RECAPTCHA_URL}?render=${props.siteKey}`;
-        script.async = true;
-        script.defer = true;
-
-        script.onload = () => {
-            if (captchaAnnouncer.value) {
-                captchaAnnouncer.value.textContent = "reCAPTCHA loaded";
-            }
-            resolve();
-        };
-
-        script.onerror = () => {
-            loader.value = false;
-            const error = new Error('Failed to load reCAPTCHA script (404 or blocked). Check site key or domain.');
-            reject(error);
-        };
-
-        document.head.appendChild(script);
-    });
+    try {
+        await loadScript(`${KEYS.GOOGLE_RECAPTCHA_URL}?render=${props.siteKey}`, { id: 'recaptcha-script' });
+    } catch (e) {
+        loader.value = false;
+        throw new Error('Failed to load reCAPTCHA script (404 or blocked). Check site key or domain.');
+    }
+    if (captchaAnnouncer.value) {
+        captchaAnnouncer.value.textContent = "reCAPTCHA loaded";
+    }
 }
 
 async function handleSubmit() {

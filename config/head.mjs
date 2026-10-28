@@ -30,9 +30,12 @@ export const head = {
         onload: "this.onload=null;this.rel='stylesheet'"
       },
       { rel: "preconnect", href: "https://staticw2.yotpo.com" },
+      // Loaded without blocking the first paint (same preload + onload swap as the Google Fonts above)
       {
-        rel: 'stylesheet',
+        rel: 'preload',
         href: '//staticw2.yotpo.com/' + process.env.YOTPO_SITE_KEY + '/widget.css',
+        as: 'style',
+        onload: "this.onload=null;this.rel='stylesheet'"
       },
       { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: true },
     ],
@@ -48,20 +51,6 @@ export const head = {
         key: 'liveAgentInit',
         innerHTML: "(function (d, src, c) { var t = d.scripts[d.scripts.length - 1], s = d.createElement('script'); s.id = 'la_x2s6df8d'; s.defer = true; s.src = '" + process.env.LIVE_AGENT_SCRIPT + "'; s.onload = s.onreadystatechange = function () { var rs = this.readyState; if (rs && (rs != 'complete') && (rs != 'loaded')) { return; } c(this); }; t.parentElement.insertBefore(s, t.nextSibling); })(document, '" + process.env.LIVE_AGENT_SCRIPT + "', function (e) {});",
         type: 'text/javascript',
-        defer: true,
-        async: true,
-        tagPosition: 'bodyClose'
-      },
-      {
-        key: 'google-maps',
-        src: "https://maps.googleapis.com/maps/api/js?key=" + process.env.GOOGLE_MAPS_API_KEY + "&libraries=places",
-        defer: true,
-        async: true,
-        tagPosition: 'bodyClose'
-      },
-      {
-        key: 'recaptcha-script',
-        src: "https://www.google.com/recaptcha/api.js?render=" + process.env.SEARCH_RECAPTCHA_SITE_KEY,
         defer: true,
         async: true,
         tagPosition: 'bodyClose'
@@ -85,19 +74,14 @@ export const head = {
         tagPosition: 'bodyClose'
       },
       {
-        key: 'model-viewer',
-        src: "https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js",
-        type: "module",
-        defer: true,
-        async: true,
-        tagPosition: 'bodyClose'
-      },
-      {
         key: 'klaviyoOnsite',
         innerHTML: `!function(){if(!window.klaviyo){window._klOnsite=window._klOnsite||[];try{window.klaviyo=new Proxy({},{get:function(n,i){return"push"===i?function(){var n;(n=window._klOnsite).push.apply(n,arguments)}:function(){for(var n=arguments.length,o=new Array(n),w=0;w<n;w++)o[w]=arguments[w];var t="function"==typeof o[o.length-1]?o.pop():void 0,e=new Promise((function(n){window._klOnsite.push([i].concat(o,[function(i){t&&t(i),n(i)}]))}));return e}}})}catch(n){window.klaviyo=window.klaviyo||[],window.klaviyo.push=function(){var n;(n=window._klOnsite).push.apply(n,arguments)}}}}();`,
         type: 'text/javascript',
-        charset: 'utf-8',
-        tagPosition: 'bodyClose'
+        // No `charset` attribute: unhead treats a tag with `charset` as the <meta charset> and drops it as a duplicate,
+        // so this stub was never rendered. Must run before GTM and any other tag that touches `window.klaviyo`: a tag that creates `window.klaviyo = []`
+        // first makes this stub skip itself, and `klaviyo.identify` is then not a function.
+        tagPosition: 'head',
+        tagPriority: 'critical'
       },
       {
         src: "https://t.contentsquare.net/uxa/4d697e8bf4c84.js",

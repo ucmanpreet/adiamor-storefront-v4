@@ -12,6 +12,7 @@
 </template>
 
 <script setup>
+import { loadScript, MODEL_VIEWER_SRC } from '~/utils/loadScript.js';
 import Modal from '~/components/ui/Modal.vue';
 
 defineProps(['frontViewPath', 'modelPath']);
@@ -20,6 +21,7 @@ const emit = defineEmits(['close']);
 const modelViewer = ref(null);
 
 onMounted(async () => {
+    await loadScript(MODEL_VIEWER_SRC, { module: true }).catch(() => {});
     begin();
 });
 

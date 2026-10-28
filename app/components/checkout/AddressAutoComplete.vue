@@ -34,6 +34,7 @@
 </template>
 
 <script setup>
+import { loadScript } from '~/utils/loadScript.js';
 const props = defineProps({
     submitted: { type: Boolean, default: false },
     isDisabled: { type: Boolean, default: false },
@@ -69,6 +70,8 @@ const autocompleteStyle = computed(() => {
 const labelClasses = computed(() => isFocused.value || props.address?.address1 ? ['top-2', '-translate-y-0', 'text-[11px]'] : ['top-1/2', '-translate-y-1/2']);
 
 onMounted(() => {
+    const config = useRuntimeConfig().public;
+    loadScript(`https://maps.googleapis.com/maps/api/js?key=${config.googleMapsApiKey}&libraries=places`).catch(() => {});
     const waitForGoogle = setInterval(() => {
         if (window.google && window.google.maps && window.google.maps.places) {
             clearInterval(waitForGoogle);

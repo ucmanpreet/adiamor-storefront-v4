@@ -1,0 +1,20 @@
+<div id="spa-skeleton" aria-hidden="true">
+  <style>
+    #spa-skeleton { font-family: system-ui, sans-serif; min-height: 100vh; background: #fff; }
+    #spa-skeleton .bar { height: 36px; background: #1f2937; }
+    #spa-skeleton .nav { height: 96px; border-bottom: 1px solid #e5e7eb; }
+    #spa-skeleton .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; max-width: 1280px; margin: 24px auto; padding: 0 16px; }
+    #spa-skeleton .card { aspect-ratio: 1; background: #f3f4f6; animation: spa-pulse 1.4s ease-in-out infinite; }
+    #spa-skeleton .line { height: 12px; width: 70%; background: #f3f4f6; margin-top: 10px; }
+    @keyframes spa-pulse { 50% { opacity: .5; } }
+    @media (min-width: 768px) { #spa-skeleton .grid { grid-template-columns: repeat(4, 1fr); } }
+  </style>
+  <div class="bar"></div>
+  <div class="nav"></div>
+  <div class="grid">
+    <div><div class="card"></div><div class="line"></div></div><div><div class="card"></div><div class="line"></div></div>
+    <div><div class="card"></div><div class="line"></div></div><div><div class="card"></div><div class="line"></div></div>
+    <div><div class="card"></div><div class="line"></div></div><div><div class="card"></div><div class="line"></div></div>
+    <div><div class="card"></div><div class="line"></div></div><div><div class="card"></div><div class="line"></div></div>
+  </div>
+</div>

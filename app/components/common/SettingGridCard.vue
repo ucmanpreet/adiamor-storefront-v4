@@ -75,6 +75,7 @@ import SettingCardImage from "~/components/common/SettingCardImage.vue";
 import SettingDropDown from "~/components/common/SettingDropDown.vue";
 import DiscountedPrice from "~/components/common/DiscountedPrice.vue";
 import { correctUrl, cleanPostfix } from "~/utils/universalHelper";
+import { loadScript, MODEL_VIEWER_SRC } from "~/utils/loadScript.js";
 
 const props = defineProps({
   setting: {
@@ -312,3 +313,8 @@ onMounted(() => {
   assignData(props.filterData);
 });
 </script>
+
+// <model-viewer> is only needed by cards that have a 3D model
+watch(checkGLBPresent, (glb) => {
+  if (glb && import.meta.client) loadScript(MODEL_VIEWER_SRC, { module: true }).catch(() => {});
+}, { immediate: true });

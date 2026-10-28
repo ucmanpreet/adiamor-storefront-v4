@@ -25,6 +25,9 @@ export default defineNuxtConfig({
   srcDir: 'app',
   devServer: { host: '0.0.0.0', port: 3000 },
 
+  // Prefetch a route's chunks on hover/focus, not as soon as a link scrolls into view: the header and footer hold dozens of links
+  experimental: { defaults: { nuxtLink: { prefetchOn: { visibility: false, interaction: true } } } },
+
   modules: ['@pinia/nuxt', '@nuxtjs/tailwindcss', '@nuxt/image'],
   // Components are imported explicitly in the source (no directory auto-import)
   components: { dirs: [] },
@@ -33,6 +36,9 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
 
   // third-party scripts whose env var is unset (no `src`/inline code) are skipped
+  // Client-only routes (search listings, cart, account) show this skeleton until the app mounts
+  spaLoadingTemplate: true,
+
   app: { head: { ...head, script: head.script.filter((s) => s.src || s.innerHTML) } },
 
   runtimeConfig: { public: runtimePublic },

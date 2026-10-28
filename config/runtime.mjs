@@ -28,6 +28,7 @@ export const runtimePublic = {
     paypalIntent: process.env.PAYPAL_INTENT,
     paypalDisableFunding: process.env.PAYPAL_DISABLE_FUNDING,
     searchRecaptchaSiteKey: process.env.SEARCH_RECAPTCHA_SITE_KEY,
+    googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
     adiamorHomeURL: process.env.ADIAMOR_HOME_URL,
     storeFrontHomeURL: process.env.STORE_FRONT_HOME_URL,
     iubendaSiteID: process.env.IUBENDA_SITE_ID,
