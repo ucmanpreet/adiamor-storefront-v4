@@ -106,7 +106,11 @@ export function skuToDisplay(sku) {
 }
 
 export function urlWithCategory(url) {
-    return `/${url?.category}/search${url['sub-category'] ? `/${url['sub-category']}` : ''}`;
+    const sub = url['sub-category'];
+    // The pair product API sends `earrings/search/design-your-own-earrings` as the sub-category, which already
+    // holds the category and `search`; adding them again gave `/earrings/search/earrings/search/design-your-own-earrings`.
+    if (sub?.startsWith(`${url?.category}/search`)) return `/${sub}`;
+    return `/${url?.category}/search${sub ? `/${sub}` : ''}`;
 }
 
 export function getCategoryType(code, subUrl = null) {

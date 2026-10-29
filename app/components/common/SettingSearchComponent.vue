@@ -136,6 +136,7 @@ import SettingInsideSearchSkeleton from "~/components/skeleton/SettingInsideSear
 import SettingGridCard from "~/components/common/SettingGridCard.vue";
 import NoDataFound from "~/components/common/NoDataFound.vue";
 import MediaImage from "~/components/common/MediaImage.vue";
+import { restoreRowAnchor } from "~/utils/restoreScroll.js";
 import { STATIC_ROUTES } from "~/utils/staticRoutes";
 import { cleanPostfix } from "~/utils/universalHelper";
 
@@ -397,15 +398,21 @@ function finishRestoration(scrollY, productUrlKey) {
                 row.data.some(item => trimSlash(item.url_key) === trimSlash(productUrlKey))
             )
 
-            if (isMobile.value) {
-                rowIndex = rowIndex < 10 ? rowIndex - 1 : rowIndex - 2;
-            } else if (rowIndex !== -1) {
-                rowIndex = rowIndex - 1;
-            }
-            if (rowIndex !== -1) {
-                nextTick(() => {
-                    gridVirtualizer.value.scrollToIndex(rowIndex, { align: 'start' })
-                })
+            const anchorTop = props.filterState?.anchorTop;
+            if (rowIndex !== -1 && anchorTop != null) {
+                const exactRow = rowIndex;
+                nextTick(() => restoreRowAnchor(gridVirtualizer.value, exactRow, anchorTop));
+            } else {
+                if (isMobile.value) {
+                    rowIndex = rowIndex < 10 ? rowIndex - 1 : rowIndex - 2;
+                } else if (rowIndex !== -1) {
+                    rowIndex = rowIndex - 1;
+                }
+                if (rowIndex !== -1) {
+                    nextTick(() => {
+                        gridVirtualizer.value.scrollToIndex(rowIndex, { align: 'start' })
+                    })
+                }
             }
 
             // window.scrollTo(0, scrollY);

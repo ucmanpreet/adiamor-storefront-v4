@@ -13,6 +13,7 @@
 
 <script>
 import { AppDB } from '~/utils/db.js';
+import { getRowAnchorTop } from '~/utils/restoreScroll.js';
 // Indexed DB — wrapped in try/catch for mobile browsers where IndexedDB
 // may be unavailable (private browsing, storage quota exceeded, etc.)
 let db = null;
@@ -228,6 +229,7 @@ onBeforeRouteLeave(async (to, from) => {
         if (state) {
           filterState.value = state;
           filterState.value.productUrlKey = from.path?.includes('diamond-pair') ? to.fullPath : to.path;
+          filterState.value.anchorTop = getRowAnchorTop(to.path, to.fullPath, from.path?.includes('diamond-pair'));
           // distinct await to ensure DB write doesn't block nav if it fails
           if (db) {
             // IndexedDB cannot clone Vue reactive proxies or functions; store a plain JSON copy

@@ -539,6 +539,7 @@ import NoDataFound from "~/components/common/NoDataFound.vue";
 import DiamondListHeader from "~/components/common/DiamondListHeader.vue";
 import DiamondListView from "~/components/common/DiamondListView.vue";
 import WithMediaCheckBox from "../filter/WithMediaCheckBox.vue";
+import { restoreRowAnchor } from "~/utils/restoreScroll.js";
 import { STATIC_ROUTES } from "~/utils/staticRoutes";
 import { cleanPostfix, correctUrl } from "~/utils/universalHelper";
 import DiamondGridCardMobile from "./DiamondGridCardMobile.vue";
@@ -1007,10 +1008,23 @@ function getPostFixQuery(baseQuery) {
   }
   return baseQuery;
 }
+// Query of the page we restored; a route-query change that repeats it must not reload page 1 over the restored list.
+// Range filters come back as `{"min":"1.00"}` from the URL and `{min:1}` from the store, so compare them as numbers.
+let restoredQuerySig = null;
+const querySignature = (query) => JSON.stringify(Object.entries(query || {}).sort(([a], [b]) => a.localeCompare(b)).map(([key, value]) => {
+  let parsed = value;
+  if (typeof value === 'string') { try { parsed = JSON.parse(value); } catch { /* plain string */ } }
+  if (parsed && typeof parsed === 'object' && 'min' in parsed) return [key, Number(parsed.min), Number(parsed.max)];
+  return [key, String(value)];
+}));
 async function handleRouteQueryChange(newQuery) {
   if (isRestoredFromSession.value) {
     // Restore from session
     isRestoredFromSession.value = false;
+    return;
+  }
+  if (restoredQuerySig && querySignature(newQuery) === restoredQuerySig) {
+    restoredQuerySig = null;
     return;
   }
   // No query exists
@@ -1521,6 +1535,7 @@ function finishRestoration(scrollY, productUrlKey) {
   nextTick(() => {
     setTimeout(() => {
       let rowIndex = 0;
+      let exactRow = -1;
       if (viewMode.value === 'grid') {
         rowIndex = chunkedFilteredList.value.findIndex(row =>
           row.data.some(item => correctUrl(item.url_key) === productUrlKey)
@@ -1532,23 +1547,30 @@ function finishRestoration(scrollY, productUrlKey) {
         if (rowIndex !== -1) {
           expandedSku.value = filteredList.value[rowIndex]?.sku;
         }
+        exactRow = rowIndex;
         // to show item in viewport
         rowIndex = rowIndex > 7 ? rowIndex - 7 : rowIndex;
       }
+      if (viewMode.value === 'grid') exactRow = rowIndex;
 
-      // Grid rows are centered; this offset only applies to the list view
-      if (isMobile.value && viewMode.value !== 'grid' && rowIndex > 0) {
-        rowIndex = Math.max(rowIndex - 2, 0);
-      }
+      const anchorTop = props.filterState?.anchorTop;
+      if (exactRow !== -1 && anchorTop != null) {
+        nextTick(() => restoreRowAnchor(viewMode.value === 'grid' ? gridVirtualizer.value : listVirtualizer.value, exactRow, anchorTop));
+      } else {
+        // Grid rows are centered; this offset only applies to the list view
+        if (isMobile.value && viewMode.value !== 'grid' && rowIndex > 0) {
+          rowIndex = Math.max(rowIndex - 2, 0);
+        }
 
-      if (rowIndex !== -1) {
-        nextTick(() => {
-          if (viewMode.value === 'grid') {
-            scrollGridToRow(rowIndex)
-          } else {
-            listVirtualizer.value.scrollToIndex(rowIndex, { align: 'start' })
-          }
-        })
+        if (rowIndex !== -1) {
+          nextTick(() => {
+            if (viewMode.value === 'grid') {
+              scrollGridToRow(rowIndex)
+            } else {
+              listVirtualizer.value.scrollToIndex(rowIndex, { align: 'start' })
+            }
+          })
+        }
       }
 
       // window.scrollTo(0, scrollY);
@@ -1635,6 +1657,8 @@ onMounted(async () => {
   const saved = props.filterState;
   if (saved) {
     isRestoredFromSession.value = true;
+    restoredQuerySig = querySignature(route.query);
+    setTimeout(() => { restoredQuerySig = null; }, 8000);
     filterData.value = saved.filters;
     page.value = saved.page;
     limit.value = saved.limit;

@@ -192,6 +192,7 @@ import Button from "~/components/common/Button.vue";
 import Icon from "~/components/common/Icon.vue";
 import NoDataFound from "~/components/common/NoDataFound.vue";
 import CustomFilter from "../filter/CustomFilter.vue";
+import { restoreRowAnchor } from "~/utils/restoreScroll.js";
 import { STATIC_ROUTES } from "~/utils/staticRoutes";
 
 // Referenced by name from pages/search.vue (<component :is="'DiamondPairSearchComponent'">)
@@ -832,33 +833,34 @@ function finishRestoration(scrollY, productUrlKey) {
     nextTick(() => {
         setTimeout(() => {
             let rowIndex = 0;
-            const getPairKeySegment = (url) => {
-                const [path, query] = url.split('?');
-                const params = new URLSearchParams(query);
-
-                const first = params.get('first_pair_key');
-                const second = params.get('second_pair_key');
-
-                return `${path}?first_pair_key=${first}&second_pair_key=${second}`;
+            // Compare by the two pair keys: the saved URL is `/diamond-pair/?first_pair_key=..` while the row's
+            // pair_url_key has no slash before the `?`, so comparing the strings never matched.
+            const getPairKeys = (url) => {
+                const params = new URLSearchParams((url || '').split('?')[1] || '');
+                return `${params.get('first_pair_key')}|${params.get('second_pair_key')}`;
             };
 
-            const normalizedProductKey = getPairKeySegment(productUrlKey);
+            const normalizedProductKey = getPairKeys(productUrlKey);
 
-            rowIndex = filteredList.value.findIndex(row => {
-                return normalizedProductKey.includes(row.pair_url_key) || row.pair_url_key === normalizedProductKey;
-            });
+            rowIndex = filteredList.value.findIndex(row => getPairKeys(row.pair_url_key) === normalizedProductKey);
 
             if (rowIndex !== -1) {
                 expandedSku.value = filteredList.value[rowIndex]?.sku;
             }
-            // to show item in viewport
-            rowIndex = rowIndex > 7 ? rowIndex - 7 : rowIndex;
+            const anchorTop = props.filterState?.anchorTop;
+            if (rowIndex !== -1 && anchorTop != null) {
+                const exactRow = rowIndex;
+                nextTick(() => restoreRowAnchor(listVirtualizer.value, exactRow, anchorTop));
+            } else {
+                // to show item in viewport
+                rowIndex = rowIndex > 7 ? rowIndex - 7 : rowIndex;
 
-            // (the original `if (this.isMobile) rowIndex -= 2` referenced an undefined property and never ran)
-            if (rowIndex !== -1) {
-                nextTick(() => {
-                    listVirtualizer.value.scrollToIndex(rowIndex, { align: 'start' })
-                })
+                // (the original `if (this.isMobile) rowIndex -= 2` referenced an undefined property and never ran)
+                if (rowIndex !== -1) {
+                    nextTick(() => {
+                        listVirtualizer.value.scrollToIndex(rowIndex, { align: 'start' })
+                    })
+                }
             }
             // window.scrollTo(0, scrollY);
             // Unlock normal behavior AFTER restore
