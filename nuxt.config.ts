@@ -114,6 +114,8 @@ export default defineNuxtConfig({
 },
 
   nitro: {
+    // `wrangler preview` (Cloudflare's non-production branch builds) refuses a config without a `previews` block; ignored by other presets
+    cloudflare: { wrangler: { previews: {} } },
     // Same as Nuxt 2 `generate`: every explicit static route is pre-rendered, dynamic URLs fall back to the SPA shell (200.html)
     prerender: {
       routes: staticPaths.map(withSlash).filter((p: string) => !(noSlash(p) in redirectMap)),

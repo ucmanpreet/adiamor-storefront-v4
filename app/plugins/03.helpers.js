@@ -1,10 +1,17 @@
 // Small global helpers that were separate Nuxt 2 plugins:
 // $formatPrice/$getCurrencySymbol (currencyFilter.js), $sanitize (dompurify.js),
 // $getVisitorCode (visitorCode.js), $getLocation (ipGeolocation.js), $isMobile/$isTabAndMobile (mobile-detect.js).
-import DOMPurify from 'isomorphic-dompurify'
+import sanitizeHtml from 'sanitize-html' // works on the server (Cloudflare Workers have no DOM, so DOMPurify cannot run there)
 import MobileDetect from 'mobile-detect'
 import KEYS from '~/utils/constant.js'
 import { assetUrl } from '~/utils/assetUrl.js'
+
+// DOMPurify's defaults keep most formatting tags plus img/a, so allow the same here
+const SANITIZE_OPTIONS = {
+  allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img', 'h1', 'h2', 'span', 'u', 'figure', 'figcaption', 'iframe']),
+  allowedAttributes: { '*': ['class', 'style', 'id'], a: ['href', 'target', 'rel', 'name'], img: ['src', 'srcset', 'alt', 'width', 'height', 'loading'], iframe: ['src', 'width', 'height', 'allowfullscreen'] },
+  allowedIframeHostnames: ['www.youtube.com', 'player.vimeo.com'],
+}
 
 export default defineNuxtPlugin((nuxtApp) => {
   const config = useRuntimeConfig().public
@@ -35,7 +42,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     win?.focus()
   })
   nuxtApp.provide('asset', assetUrl)
-  nuxtApp.provide('sanitize', (html) => (html ? DOMPurify.sanitize(html) : ''))
+  nuxtApp.provide('sanitize', (html) => (html ? sanitizeHtml(html, SANITIZE_OPTIONS) : ''))
 
   nuxtApp.provide('getLocation', async () => {
     try {

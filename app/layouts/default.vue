@@ -42,6 +42,12 @@ const router = useRouter();
 const config = useRuntimeConfig().public;
 const { $bus, $getVisitorCode } = useNuxtApp();
 
+// Page meta (search / featured / landing pages) used to be fetched only by the client router plugin, so the server
+// HTML carried the default title. Fetch it during SSR; the client sees `metaPath` already set (Pinia payload) and skips it.
+if (import.meta.server && store.metaPath !== route.path) {
+  try { await store.fetchDynamicMeta(route); } catch (e) { console.error('Meta fetch failed:', e); }
+}
+
 const catType = ref('');
 const filterType = ref('');
 const siteName = "Adiamor Diamonds and Fine Jewelry";
