@@ -129,7 +129,9 @@ useHead(() => {
         const prod = product.value || {};
 
         const fallbackPath = `${config.storeFrontHomeURL}${route.path}`;
-        const canonicalUrl = route.name === 'yourSettingPage' ? route.fullPath : prod?.canonical_url || prod?.url_key || fallbackPath;
+        // API sends a relative url_key (/diamonds/..); canonical must be absolute
+        const toAbsolute = (u) => (u && u.startsWith('/') ? `${(config.storeFrontHomeURL || '').replace(/\/$/, '')}${u}` : u);
+        const canonicalUrl = route.name === 'yourSettingPage' ? route.fullPath : toAbsolute(prod?.canonical_url || prod?.url_key) || fallbackPath;
         const getPrimaryImage = (product, routeSku) => {
             let images = product?.images || [];
             if(routeSku && product?.variants?.length){
@@ -144,7 +146,8 @@ useHead(() => {
         };
 
         const title = prod?.meta_title || prod?.name || 'Default Title';
-        const description = prod?.meta_description || '';
+        // pairs come without meta_description, so fall back to the product description
+        const description = prod?.meta_description || String(prod?.description || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
         const keywords = prod?.meta_keywords || '';
         const image = prod?.og_image_url || getPrimaryImage(prod, route.query.sku);
         const priceValidUntil = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
@@ -268,14 +271,11 @@ function receiveDiscountedPrice(price) {
     );
 }
 
-// Former `created` hook: runs un-awaited at setup time (same ordering as before).
+// Runs on the server too: the page waits for the product, so title/meta/canonical/JSON-LD are in the first HTML
+// (no worker.js needed). On the client the server's result is reused from the payload instead of fetching again.
 async function loadProduct() {
     const currentPath = route.path;
     const query = route.query;
-
-    $bus.emit('aria-announce', 'Loading product page.');
-
-    store.setProduct(null);
     const isPair = currentPath.includes('diamond-pair');
 
     try {
@@ -283,35 +283,27 @@ async function loadProduct() {
         const productData = await store.fetchProductData({
             payload: { isPair, params, sku: query?.sku }
         });
-        loader.value = false;
-        product.value = productData;
-
-        if (productData && productData?.sku) {
-            store.setProduct(productData);
-            isValidProduct.value = true;
-
-            nextTick(() => {
-                $bus.emit(
-                    'aria-announce',
-                    `${productData.name || 'Product'} loaded successfully.`
-                );
-            });
-        } else {
-            $bus.emit(
-                'aria-announce',
-                'Product not found.'
-            );
-        }
+        return productData ?? null;
     } catch (err) {
         console.error("Fetch hook error while fetching single product:", err);
-        isValidProduct.value = false;
-        loader.value = false;
-
-        $bus.emit(
-            'aria-announce',
-            'An error occurred while loading this product.'
-        );
+        return null;
     }
 }
-loadProduct();
+
+if (import.meta.client) {
+    $bus.emit('aria-announce', 'Loading product page.');
+    store.setProduct(null);
+}
+const { data: productData } = await useAsyncData(`pdp:${route.fullPath}`, loadProduct);
+loader.value = false;
+product.value = productData.value;
+if (productData.value?.sku) {
+    store.setProduct(productData.value);
+    isValidProduct.value = true;
+    if (import.meta.client) {
+        nextTick(() => $bus.emit('aria-announce', `${productData.value.name || 'Product'} loaded successfully.`));
+    }
+} else if (import.meta.client) {
+    $bus.emit('aria-announce', 'Product not found.');
+}
 </script>

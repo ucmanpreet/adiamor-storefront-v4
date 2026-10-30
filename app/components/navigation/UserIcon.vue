@@ -1,7 +1,7 @@
 <template>
     <div v-click-outside="onClickOutside" class="flex align-middle items-center">
         <!-- Guest: Login link -->
-        <NuxtLink v-if="!store.userData" @click.prevent="handleLinkClick()" :to="loginPath"
+        <NuxtLink v-if="!hydrated || !store.userData" @click.prevent="handleLinkClick()" :to="loginPath"
             aria-label="Login" class="flex items-center">
             <Tooltip :text="`Login`">
                 <Icon name="user" class="w-4 h-4" aria-hidden="true" />
@@ -49,6 +49,8 @@ const store = useMainStore();
 const route = useRoute();
 const router = useRouter();
 
+// userData comes from localStorage (client only), so the server always renders the guest link; switch after hydration
+const hydrated = ref(false);
 const isOpen = ref(false);
 const loading = ref(false);
 const isLoggedIn = ref(false);
@@ -60,6 +62,7 @@ const triggerBtn = ref(null);
 const menu = ref(null);
 
 onMounted(() => {
+    hydrated.value = true;
     isLoggedIn.value = store.isLoggedIn;
 });
 
