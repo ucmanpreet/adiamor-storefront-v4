@@ -4,7 +4,7 @@ export const runtimePublic = {
       siteKey: process.env.RECAPTCHA_SITE_KEY,
       version: 2
     },
-    baseUrl: process.env.BASE_REST_URL,
+    baseUrl: process.env.VITE_BASE_REST_URL,
     gtmUrl: process.env.GTM_SCRIPT_URL,
     countryCode: process.env.COUNTRY_CODE,
     gtmIframeUrl: process.env.GTM_FRAME_URL,
