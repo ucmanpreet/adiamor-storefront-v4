@@ -129,9 +129,7 @@ useHead(() => {
         const prod = product.value || {};
 
         const fallbackPath = `${config.storeFrontHomeURL}${route.path}`;
-        // API sends a relative url_key (/diamonds/..); canonical must be absolute
-        const toAbsolute = (u) => (u && u.startsWith('/') ? `${(config.storeFrontHomeURL || '').replace(/\/$/, '')}${u}` : u);
-        const canonicalUrl = route.name === 'yourSettingPage' ? route.fullPath : toAbsolute(prod?.canonical_url || prod?.url_key) || fallbackPath;
+        const canonicalUrl = route.name === 'yourSettingPage' ? route.fullPath : prod?.canonical_url || prod?.url_key || fallbackPath;
         const getPrimaryImage = (product, routeSku) => {
             let images = product?.images || [];
             if(routeSku && product?.variants?.length){
