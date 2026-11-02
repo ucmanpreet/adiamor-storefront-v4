@@ -1,0 +1,5 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "adiamor-storefront-v4",
+  "keep_vars": true
+}
