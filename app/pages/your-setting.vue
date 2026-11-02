@@ -39,64 +39,49 @@ const loader = ref(true);
 const isValidProduct = ref(false);
 const product = ref(null);
 
-// Former `created` hook: runs un-awaited at setup time (same ordering as before).
-async function loadBundleProduct() {
+// Runs on the server too: the page waits for the bundle, so title/meta/canonical/JSON-LD are in the first HTML
+// (no worker.js needed). On the client the server's result is reused from the payload instead of fetching again.
+async function loadBundle() {
     try {
-        $bus.emit(
-            'aria-announce',
-            'Loading product details'
-        )
-        store.setProduct(null);
-        store.setBundleItem(null);
-
-        const productData = await store.fetchBundleProductData({ payload: { params: route.query } });
-        let setting = productData?.setting;
-        let diamond = productData?.diamond;
-        loader.value = false;
-        isValidProduct.value = setting?.sku && diamond?.sku;
-        if (!isValidProduct.value) {
-            // 🔹 Announce Not Found
-            $bus.emit(
-                'aria-announce',
-                'Product not found'
-            )
-            return;
-        }
-        // 🔹 Announce Success
-        $bus.emit(
-            'aria-announce',
-            `Your engagement ring has been successfully created with ${setting?.name} and ${diamond?.name}. The total cost of the product is ${productData?.formatted_discounted_price}.`
-        )
-
-        //Assign product obj
-        product.value = {...setting, productData };
-        await store.setProduct(setting);
-        await store.setBundleItem(productData);
-        let currentFamily = setting?.attribute_family_code;
-        let bundleType = currentFamily?.includes('earring') ? 'earring' : currentFamily?.includes('ring') ? 'ring' : currentFamily?.includes('necklace') ? 'necklace' : 'ring';
-        // Next product url
-        if (bundleType) {
-            let event = bundleType.charAt(0).toUpperCase() + bundleType.slice(1);
-            let selectedVariant = null;
-            let settingClone = JSON.parse(JSON.stringify(setting));
-            settingClone['type'] = 'configurable';
-            if (setting && setting?.variants && setting.variants.length > 0) {
-                selectedVariant = setting.variants.find(variant => variant?.sku === setting?.sku);
-                settingClone['selectedVariant'] = selectedVariant;
-            }
-            await bundle[`update${event}`](settingClone);
-            await bundle[`update${event}`](diamond);
-        }
+        return (await store.fetchBundleProductData({ payload: { params: route.query } })) ?? null;
     } catch (error) {
         console.log('Error while fetching bundle product data', error);
-        // 🔹 Announce Error
-        $bus.emit(
-            'aria-announce',
-            'Error loading product details'
-        )
+        return null;
     }
 }
-loadBundleProduct();
+
+const announce = (msg) => { if (import.meta.client) $bus.emit('aria-announce', msg); };
+
+announce('Loading product details');
+store.setProduct(null);
+store.setBundleItem(null);
+
+const { data: productData } = await useAsyncData(`bundle:${route.fullPath}`, loadBundle);
+const setting = productData.value?.setting;
+const diamond = productData.value?.diamond;
+loader.value = false;
+isValidProduct.value = !!(setting?.sku && diamond?.sku);
+
+if (!isValidProduct.value) {
+    announce('Product not found');
+} else {
+    announce(`Your engagement ring has been successfully created with ${setting?.name} and ${diamond?.name}. The total cost of the product is ${productData.value?.formatted_discounted_price}.`);
+
+    //Assign product obj
+    product.value = { ...setting, productData: productData.value };
+    store.setProduct(setting);
+    store.setBundleItem(productData.value);
+    const currentFamily = setting?.attribute_family_code;
+    const bundleType = currentFamily?.includes('earring') ? 'earring' : currentFamily?.includes('ring') ? 'ring' : currentFamily?.includes('necklace') ? 'necklace' : 'ring';
+    const event = bundleType.charAt(0).toUpperCase() + bundleType.slice(1);
+    const settingClone = JSON.parse(JSON.stringify(setting));
+    settingClone['type'] = 'configurable';
+    if (setting?.variants?.length > 0) {
+        settingClone['selectedVariant'] = setting.variants.find(variant => variant?.sku === setting?.sku);
+    }
+    bundle[`update${event}`](settingClone);
+    bundle[`update${event}`](diamond);
+}
 
 useHead(() => {
     // P4 SEO Fix: Prevent search engines from indexing 404 pages.
