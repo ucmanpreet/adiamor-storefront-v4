@@ -74,5 +74,3 @@ PLUGIN-VETTING-ANALYSIS.md
 playwright.a11y.config.ts
 playwright.proto.config.ts
 playwright.smoke.config.ts
-# Wrangler local state and the deploy config Nitro writes on Cloudflare builds
-.wrangler/
