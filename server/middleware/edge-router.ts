@@ -127,7 +127,8 @@ async function lookupDynamicRedirect(path: string): Promise<RedirectHit> {
       }
       const data: any = await res.json()
       if (data?.action === 'redirect' && data.redirectTo) {
-        const value = { to: data.redirectTo, status: data.status || 301 }
+        // The API builds the target as frontend_url + url_key; a url_key with a leading slash leaves "//" in the path
+        const value = { to: String(data.redirectTo).replace(/([^:])\/{2,}/g, '$1/'), status: data.status || 301 }
         await writeRedirectCache(path, value)
         return value
       }
