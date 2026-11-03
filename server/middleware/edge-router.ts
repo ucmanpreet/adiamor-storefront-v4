@@ -100,6 +100,7 @@ async function writeRedirectCache(path: string, value: RedirectHit) {
 }
 
 async function lookupDynamicRedirect(path: string): Promise<RedirectHit> {
+  path = path.replace(/\/+$/, '') // /x and /x/ are the same product: one cache entry, and no trailing slash in url_key
   const cached = await readRedirectCache(path)
   if (cached) return cached.value
   if (Date.now() < redirectBackoffUntil) return null
