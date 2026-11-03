@@ -931,6 +931,8 @@ export const useMainStore = defineStore('main', {
 
             return response?.data ?? null;
           } catch (error) {
+            // null: the product does not exist. undefined: the request failed (429, timeout), so callers may retry
+            if (error?.status === 404) return null;
             console.error('Error fetching product:', error);
           }
       },

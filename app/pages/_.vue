@@ -271,6 +271,12 @@ function receiveDiscountedPrice(price) {
 
 // Runs on the server too: the page waits for the product, so title/meta/canonical/JSON-LD are in the first HTML
 // (no worker.js needed). On the client the server's result is reused from the payload instead of fetching again.
+// Set when the server could not get the product (API 429, timeout). It travels in the payload, so the browser
+// fetches the product itself after hydration instead of showing "not found".
+const serverFetchFailed = useState(`pdp-failed:${route.fullPath}`, () => false);
+// Taken here, before any await, while Nuxt's context is still available
+const cacheControl = useResponseHeader('Cache-Control');
+
 async function loadProduct() {
     const currentPath = route.path;
     const query = route.query;
@@ -281,6 +287,11 @@ async function loadProduct() {
         const productData = await store.fetchProductData({
             payload: { isPair, params, sku: query?.sku }
         });
+        if (productData === undefined && import.meta.server) {
+            serverFetchFailed.value = true;
+            // A failed render must not be kept by a CDN cache
+            cacheControl.value = 'no-store';
+        }
         return productData ?? null;
     } catch (err) {
         console.error("Fetch hook error while fetching single product:", err);
@@ -301,7 +312,23 @@ if (productData.value?.sku) {
     if (import.meta.client) {
         nextTick(() => $bus.emit('aria-announce', `${productData.value.name || 'Product'} loaded successfully.`));
     }
-} else if (import.meta.client) {
+} else if (import.meta.client && !serverFetchFailed.value) {
     $bus.emit('aria-announce', 'Product not found.');
 }
+
+onMounted(async () => {
+    if (!serverFetchFailed.value) return;
+    serverFetchFailed.value = false;
+    loader.value = true;
+    const data = await loadProduct();
+    product.value = data ?? null;
+    if (data?.sku) {
+        store.setProduct(data);
+        isValidProduct.value = true;
+        $bus.emit('aria-announce', `${data.name || 'Product'} loaded successfully.`);
+    } else {
+        $bus.emit('aria-announce', 'Product not found.');
+    }
+    loader.value = false;
+});
 </script>
