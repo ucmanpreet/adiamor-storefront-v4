@@ -18,9 +18,15 @@ const BLOG_ORIGIN = 'https://wordpress-blog-origin.adiamor.com'
 const BLOG_PREFIX = '/blog'
 const REDIRECT_API_URL = 'https://afd.adiamor.com/api/redirect-lookup'
 
-// The old worker asked the API once per request; keep answers for a few minutes per isolate to spare it
-const REDIRECT_CACHE_TTL = 5 * 60 * 1000
-const redirectCache = new Map<string, { at: number, value: { to: string, status: number } | null }>()
+// The old worker asked the API once per request. The answer for a path (redirect or none) is kept in Cloudflare's
+// Cache API, shared by every isolate in the data centre; a per-isolate Map stands in where that API does not exist (dev).
+// When the API answers 429 the lookups pause for a while instead of hammering it.
+type RedirectHit = { to: string, status: number } | null
+const REDIRECT_HIT_TTL = 60 * 60
+const REDIRECT_MISS_TTL = 10 * 60
+const REDIRECT_BACKOFF = 30 * 1000
+const redirectMemory = new Map<string, { at: number, ttl: number, value: RedirectHit }>()
+let redirectBackoffUntil = 0
 
 const hopByHop = ['connection', 'keep-alive', 'proxy-authenticate', 'proxy-authorization', 'te', 'trailer', 'transfer-encoding', 'upgrade']
 
@@ -61,34 +67,76 @@ function buildDiamondSearchRedirect(path: string) {
   return `${searchPath}?${params.toString()}`
 }
 
-async function lookupDynamicRedirect(path: string) {
+const edgeCache = (): Cache | null => (globalThis as any).caches?.default ?? null
+const redirectCacheKey = (path: string) => new Request(`https://redirect-lookup.invalid/${encodeURIComponent(path)}`)
+
+async function readRedirectCache(path: string): Promise<{ value: RedirectHit } | null> {
+  const cache = edgeCache()
+  if (cache) {
+    try {
+      const hit = await cache.match(redirectCacheKey(path))
+      return hit ? { value: (await hit.json()) as RedirectHit } : null
+    } catch (e) {
+      console.error('Redirect cache read failed:', e)
+      return null
+    }
+  }
+  const mem = redirectMemory.get(path)
+  return mem && Date.now() - mem.at < mem.ttl ? { value: mem.value } : null
+}
+
+async function writeRedirectCache(path: string, value: RedirectHit) {
+  const ttl = value ? REDIRECT_HIT_TTL : REDIRECT_MISS_TTL
+  const cache = edgeCache()
+  if (!cache) {
+    redirectMemory.set(path, { at: Date.now(), ttl: ttl * 1000, value })
+    return
+  }
+  try {
+    await cache.put(redirectCacheKey(path), new Response(JSON.stringify(value), { headers: { 'Cache-Control': `public, max-age=${ttl}` } }))
+  } catch (e) {
+    console.error('Redirect cache write failed:', e)
+  }
+}
+
+async function lookupDynamicRedirect(path: string): Promise<RedirectHit> {
+  const cached = await readRedirectCache(path)
+  if (cached) return cached.value
+  if (Date.now() < redirectBackoffUntil) return null
+
   const normalized = path.replace(/^\/+|\/+$/g, '')
   const lastSegment = normalized.split('/').pop()
   const variants = Array.from(new Set([normalized, '/' + normalized, lastSegment, '/' + lastSegment]))
+  let complete = true // a partial answer (some variant failed) is not remembered
   for (const urlKey of variants) {
     if (!urlKey) continue
-    const cached = redirectCache.get(urlKey)
-    if (cached && Date.now() - cached.at < REDIRECT_CACHE_TTL) {
-      if (cached.value) return cached.value
-      continue
-    }
-    let value: { to: string, status: number } | null = null
     try {
       const res = await fetch(REDIRECT_API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({ url_key: urlKey }),
       })
-      if (!res.ok) continue // errors (429 etc.) are not cached
+      if (res.status === 429) {
+        // The remaining variants would be refused too
+        redirectBackoffUntil = Date.now() + REDIRECT_BACKOFF
+        return null
+      }
+      if (!res.ok) {
+        complete = false
+        continue
+      }
       const data: any = await res.json()
-      if (data?.action === 'redirect' && data.redirectTo) value = { to: data.redirectTo, status: data.status || 301 }
+      if (data?.action === 'redirect' && data.redirectTo) {
+        const value = { to: data.redirectTo, status: data.status || 301 }
+        await writeRedirectCache(path, value)
+        return value
+      }
     } catch (e) {
       console.error('Error in URL resolver:', e)
-      continue
+      complete = false
     }
-    redirectCache.set(urlKey, { at: Date.now(), value })
-    if (value) return value
   }
+  if (complete) await writeRedirectCache(path, null)
   return null
 }
 
