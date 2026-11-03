@@ -100,6 +100,8 @@ export default defineEventHandler(async (event) => {
   if (SKIP_PREFIXES.some((p) => path.startsWith(p))) return
   // Every page response, whatever it turns out to be, may not be framed by other sites
   setResponseHeaders(event, { 'X-Frame-Options': 'SAMEORIGIN', 'Content-Security-Policy': "frame-ancestors 'self'" })
+  // Test deploys on Cloudflare's own hostnames must stay out of search results; the real domain is untouched
+  if (/\.(workers|pages)\.dev$/i.test(url.hostname)) setResponseHeader(event, 'X-Robots-Tag', 'noindex, nofollow')
 
   const cfEnv: any = (event.context as any).cloudflare?.env || {}
 
