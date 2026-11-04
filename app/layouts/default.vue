@@ -111,7 +111,9 @@ useHead(() => {
       { name: 'p:domain_verify', content: '214eb2d9e8c97c14678898f3801d91fa' },
       // Adding origin-trial meta tag
       { 'http-equiv': 'origin-trial', content: 'A7JYkbIvWKmS8mWYjXO12SIIsfPdI7twY91Y3LWOV/YbZmN1ZhYv8O+Zs6/IPCfBE99aV9tIC8sWZSCN09vf7gkAAACWeyJvcmlnaW4iOiJodHRwczovL2N0LnBpbnRlcmVzdC5jb206NDQzIiwiZmVhdHVyZSI6IkRpc2FibGVUaGlyZFBhcnR5U3RvcmFnZVBhcnRpdGlvbmluZzIiLCJleHBpcnkiOjE3NDIzNDIzOTksImlzU3ViZG9tYWluIjp0cnVlLCJpc1RoaXJkUGFydHkiOnRydWV9' },
-      // Canonical meta tag
+    ],
+    // rel=canonical is a <link>, not a <meta>
+    link: [
       { key: 'canonical', rel: 'canonical', href: canonicalUrl }
     ],
     script: [
