@@ -35,6 +35,7 @@ import landingData from '@/static/js/pageMetaHeading.js';
 import BreadCrumb from '~/components/ui/BreadCrumb.vue';
 import Footer from '~/components/layout/Footer.vue';
 import { STATIC_ROUTES } from '~/utils/staticRoutes';
+import { metaUrl } from '~/utils/universalHelper';
 
 const store = useMainStore();
 const route = useRoute();
@@ -76,9 +77,11 @@ const isBundleView = computed(() => route.name === 'yourSettingPage');
 
 useHead(() => {
   const pageTitle = metaData.value?.title;
-  const fallbackPath = `${config.storeFrontHomeURL}${route.fullPath}`;
-  const normalizedFallback = fallbackPath.includes('?') ? fallbackPath : fallbackPath.replace(/\/?$/, '/');
-  const canonicalUrl = metaData.value?.canonical_url || normalizedFallback;
+  // Only the bundle page keeps its query string in the URL; everywhere else it is the path alone, with a trailing slash
+  const fallbackUrl = isBundleView.value
+    ? metaUrl(config.storeFrontHomeURL, route.fullPath, true)
+    : metaUrl(config.storeFrontHomeURL, route.path).replace(/\/?$/, '/');
+  const canonicalUrl = metaUrl(config.storeFrontHomeURL, metaData.value?.canonical_url || fallbackUrl, isBundleView.value);
   return {
     title: pageTitle,
     meta: [

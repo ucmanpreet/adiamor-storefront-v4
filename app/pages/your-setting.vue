@@ -29,10 +29,12 @@
 import CustomLoader from '~/components/ui/CustomLoader.vue';
 import NoDataFound from '~/components/common/NoDataFound.vue';
 import ProductDetailPage from '~/components/product/ProductDetailPage.vue';
+import { metaUrl } from '~/utils/universalHelper';
 
 const store = useMainStore();
 const bundle = useBundleStore();
 const route = useRoute();
+const config = useRuntimeConfig().public;
 const { $bus } = useNuxtApp();
 
 const loader = ref(true);
@@ -95,8 +97,8 @@ useHead(() => {
 
     if (!loader.value && isValidProduct.value) {
         const prod = product.value || {};
-        // Bundle: the full path with its query string (the bundle is identified by the query)
-        const canonicalUrl = route.fullPath;
+        // Bundle: the only page that keeps its query string; absolute, single slashes
+        const canonicalUrl = metaUrl(config.storeFrontHomeURL, route.fullPath, true);
         const getPrimaryImage = (prod) => {
             let images = prod?.images || [];
             // 2. Try image with type === 'front'
