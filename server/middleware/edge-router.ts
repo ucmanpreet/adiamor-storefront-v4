@@ -10,6 +10,8 @@ const CATEGORY_PREFIXES = [
 const DIAMOND_PREFIXES = ['/lab-diamonds/', '/diamonds/']
 const JUNK_EXTENSIONS = /\.(html|htm|aspx|php|jsp|cgi)$/i
 const JUNK_PREFIXES = ['/query/', '/home/detailredirect', '/pdfview/', '/diamond/imagerequest']
+// Data and asset files under a category path (e.g. /diamonds/_payload.json) are not products: no API lookups for them
+const NON_PAGE_FILE = /\.(json|js|mjs|css|map|png|jpe?g|webp|avif|gif|svg|ico|woff2?|ttf|txt|xml)$/i
 // Build output, dev server and framework internals: never rewritten or redirected
 const SKIP_PREFIXES = ['/_nuxt', '/_ipx', '/_payload', '/__', '/@', '/node_modules', '/.well-known']
 
@@ -120,9 +122,11 @@ async function lookupDynamicRedirect(path: string): Promise<RedirectHit> {
       if (res.status === 429) {
         // The remaining variants would be refused too
         redirectBackoffUntil = Date.now() + REDIRECT_BACKOFF
+        console.warn(`[edge-router] redirect-lookup 429 for ${path}, lookups paused ${REDIRECT_BACKOFF / 1000}s`)
         return null
       }
       if (!res.ok) {
+        console.warn(`[edge-router] redirect-lookup ${res.status} for ${urlKey}`)
         complete = false
         continue
       }
@@ -131,6 +135,7 @@ async function lookupDynamicRedirect(path: string): Promise<RedirectHit> {
         // The API builds the target as frontend_url + url_key; a url_key with a leading slash leaves "//" in the path
         const value = { to: String(data.redirectTo).replace(/([^:])\/{2,}/g, '$1/'), status: data.status || 301 }
         await writeRedirectCache(path, value)
+        console.info(`[edge-router] redirect-lookup hit: ${path} -> ${value.to}`)
         return value
       }
     } catch (e) {
@@ -138,7 +143,10 @@ async function lookupDynamicRedirect(path: string): Promise<RedirectHit> {
       complete = false
     }
   }
-  if (complete) await writeRedirectCache(path, null)
+  if (complete) {
+    await writeRedirectCache(path, null)
+    console.info(`[edge-router] redirect-lookup: API has no redirect for ${path}`)
+  }
   return null
 }
 
@@ -211,7 +219,7 @@ export default defineEventHandler(async (event) => {
 
   // 4. Simple products with a configurable parent are redirected to the parent (decided by the API)
   const category = CATEGORY_PREFIXES.find((p) => path.startsWith(p))
-  const isProductLike = !!category && !path.includes('/search') && path.length > category.length
+  const isProductLike = !!category && !path.includes('/search') && path.length > category.length && !NON_PAGE_FILE.test(path)
   if (isProductLike) {
     const hit = await lookupDynamicRedirect(path)
     if (hit) return redirect(hit.to, hit.status)
