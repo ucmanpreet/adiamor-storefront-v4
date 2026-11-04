@@ -33,7 +33,6 @@ import ProductDetailPage from '~/components/product/ProductDetailPage.vue';
 const store = useMainStore();
 const bundle = useBundleStore();
 const route = useRoute();
-const config = useRuntimeConfig().public;
 const { $bus } = useNuxtApp();
 
 const loader = ref(true);
@@ -96,8 +95,8 @@ useHead(() => {
 
     if (!loader.value && isValidProduct.value) {
         const prod = product.value || {};
-        // Absolute URL (storefront base + full path with the query), not a bare path
-        const canonicalUrl = `${String(config.storeFrontHomeURL || '').replace(/\/+$/, '')}${route.fullPath}`;
+        // Bundle: the full path with its query string (the bundle is identified by the query)
+        const canonicalUrl = route.fullPath;
         const getPrimaryImage = (prod) => {
             let images = prod?.images || [];
             // 2. Try image with type === 'front'
