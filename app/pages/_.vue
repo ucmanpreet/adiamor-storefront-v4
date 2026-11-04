@@ -129,7 +129,9 @@ useHead(() => {
         const prod = product.value || {};
 
         const fallbackPath = `${config.storeFrontHomeURL}${route.path}`;
-        const canonicalUrl = route.name === 'yourSettingPage' ? route.fullPath : prod?.canonical_url || prod?.url_key || fallbackPath;
+        // Meta URLs must be absolute: a bare path or url_key gets the storefront base in front
+        const withBase = (u) => /^https?:\/\//i.test(u) ? u : `${String(config.storeFrontHomeURL || '').replace(/\/+$/, '')}/${String(u).replace(/^\/+/, '')}`;
+        const canonicalUrl = withBase(route.name === 'yourSettingPage' ? route.fullPath : prod?.canonical_url || prod?.url_key || fallbackPath);
         const getPrimaryImage = (product, routeSku) => {
             let images = product?.images || [];
             if(routeSku && product?.variants?.length){
