@@ -73,6 +73,7 @@ import Button from '~/components/common/Button.vue';
 import ShopJeweleryByCategory from '~/components/carousel/ShopJeweleryByCategory.vue';
 import ContactLink from '~/components/common/ContactLink.vue';
 import { STATIC_ROUTES } from '~/utils/staticRoutes';
+import { metaUrl } from '~/utils/universalHelper';
 
 const store = useMainStore();
 const route = useRoute();
@@ -129,9 +130,8 @@ useHead(() => {
         const prod = product.value || {};
 
         const fallbackPath = `${config.storeFrontHomeURL}${route.path}`;
-        // Meta URLs must be absolute: a bare path or url_key gets the storefront base in front
-        const withBase = (u) => /^https?:\/\//i.test(u) ? u : `${String(config.storeFrontHomeURL || '').replace(/\/+$/, '')}/${String(u).replace(/^\/+/, '')}`;
-        const canonicalUrl = withBase(route.name === 'yourSettingPage' ? route.fullPath : prod?.canonical_url || prod?.url_key || fallbackPath);
+        // Absolute, single-slash URL; only the bundle keeps its query string
+        const canonicalUrl = metaUrl(config.storeFrontHomeURL, route.name === 'yourSettingPage' ? route.fullPath : prod?.canonical_url || prod?.url_key || fallbackPath, route.name === 'yourSettingPage');
         const getPrimaryImage = (product, routeSku) => {
             let images = product?.images || [];
             if(routeSku && product?.variants?.length){

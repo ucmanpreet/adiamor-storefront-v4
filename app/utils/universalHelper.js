@@ -291,3 +291,13 @@ export function fetchSKULabel(product) {
     let attrFamily = product?.attribute_family_code || product?.product?.attribute_family_code;
     return (product?.type == 'simple' && attrFamily == 'certified_diamond') || product?.type == 'bundle' ? `${lang.diamondSku}` : `${lang.settingSku}`;
 }
+// Absolute URL for og:url / canonical / JSON-LD: storefront base + path, with "//" collapsed to "/".
+// Without keepQuery (everything except the bundle page) the "?..." and "#..." part is dropped.
+export function metaUrl(base, url, keepQuery = false) {
+    let value = String(url ?? '');
+    if (!keepQuery) value = value.split(/[?#]/)[0];
+    if (!/^https?:\/\//i.test(value)) {
+        value = `${String(base || '').replace(/\/+$/, '')}/${value.replace(/^\/+/, '')}`;
+    }
+    return value.replace(/([^:])\/{2,}/g, '$1/');
+}
