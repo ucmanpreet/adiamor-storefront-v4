@@ -25,10 +25,15 @@ const REDIRECT_API_URL = 'https://afd.adiamor.com/api/redirect-lookup'
 // When the API answers 429 the lookups pause for a while instead of hammering it.
 type RedirectHit = { to: string, status: number } | null
 const REDIRECT_HIT_TTL = 60 * 60
-const REDIRECT_MISS_TTL = 10 * 60
+const REDIRECT_MISS_TTL = 60 * 60 // a dead URL rarely comes back, and bots keep asking for the same ones
 const REDIRECT_BACKOFF = 30 * 1000
+const REDIRECT_BACKOFF_MAX = 5 * 60 * 1000
+const MAX_CONCURRENT_LOOKUPS = 4 // per isolate; over the limit a lookup is skipped and the page renders normally
 const redirectMemory = new Map<string, { at: number, ttl: number, value: RedirectHit }>()
 let redirectBackoffUntil = 0
+let backoffStep = 0
+let activeLookups = 0
+const BACKOFF_KEY = new Request('https://redirect-lookup.invalid/__backoff__')
 
 const hopByHop = ['connection', 'keep-alive', 'proxy-authenticate', 'proxy-authorization', 'te', 'trailer', 'transfer-encoding', 'upgrade']
 
@@ -101,12 +106,64 @@ async function writeRedirectCache(path: string, value: RedirectHit) {
   }
 }
 
+// The pause is shared with the other isolates of this data centre through the Cache API (short TTL)
+async function sharedBackoffUntil(): Promise<number> {
+  const cache = edgeCache()
+  if (!cache) return 0
+  try {
+    const hit = await cache.match(BACKOFF_KEY)
+    return hit ? Number(await hit.text()) || 0 : 0
+  } catch (e) {
+    console.error('Redirect backoff read failed:', e)
+    return 0
+  }
+}
+
+async function setSharedBackoff(until: number) {
+  const cache = edgeCache()
+  if (!cache) return
+  const ttl = Math.max(1, Math.ceil((until - Date.now()) / 1000))
+  try {
+    await cache.put(BACKOFF_KEY, new Response(String(until), { headers: { 'Cache-Control': `public, max-age=${ttl}` } }))
+  } catch (e) {
+    console.error('Redirect backoff write failed:', e)
+  }
+}
+
+// Concurrent requests for the same uncached path wait for one lookup instead of each calling the API
+const inflightLookups = new Map<string, Promise<RedirectHit>>()
+
+// Caps the API calls one isolate makes at the same time
+async function limitedLookup(fn: () => Promise<RedirectHit>): Promise<RedirectHit> {
+  if (activeLookups >= MAX_CONCURRENT_LOOKUPS) return null
+  activeLookups++
+  try {
+    return await fn()
+  } finally {
+    activeLookups--
+  }
+}
+
 async function lookupDynamicRedirect(path: string): Promise<RedirectHit> {
   path = path.replace(/\/+$/, '') // /x and /x/ are the same product: one cache entry, and no trailing slash in url_key
   const cached = await readRedirectCache(path)
   if (cached) return cached.value
   if (Date.now() < redirectBackoffUntil) return null
+  const shared = await sharedBackoffUntil()
+  if (Date.now() < shared) {
+    redirectBackoffUntil = shared
+    return null
+  }
 
+  let pending = inflightLookups.get(path)
+  if (!pending) {
+    pending = limitedLookup(() => fetchRedirect(path)).finally(() => inflightLookups.delete(path))
+    inflightLookups.set(path, pending)
+  }
+  return pending
+}
+
+async function fetchRedirect(path: string): Promise<RedirectHit> {
   const normalized = path.replace(/^\/+|\/+$/g, '')
   const lastSegment = normalized.split('/').pop()
   const variants = Array.from(new Set([normalized, '/' + normalized, lastSegment, '/' + lastSegment]))
@@ -120,9 +177,16 @@ async function lookupDynamicRedirect(path: string): Promise<RedirectHit> {
         body: JSON.stringify({ url_key: urlKey }),
       })
       if (res.status === 429) {
-        // The remaining variants would be refused too
-        redirectBackoffUntil = Date.now() + REDIRECT_BACKOFF
-        console.warn(`[edge-router] redirect-lookup 429 for ${path}, lookups paused ${REDIRECT_BACKOFF / 1000}s`)
+        // The remaining variants would be refused too. Retry-After wins; otherwise the pause doubles up to a cap
+        const retryAfter = Number(res.headers.get('retry-after'))
+        const base = retryAfter > 0
+          ? Math.min(retryAfter * 1000, REDIRECT_BACKOFF_MAX)
+          : Math.min(REDIRECT_BACKOFF * 2 ** backoffStep, REDIRECT_BACKOFF_MAX)
+        backoffStep = Math.min(backoffStep + 1, 10)
+        const wait = base * (0.8 + Math.random() * 0.4) // jitter, so isolates do not all come back at once
+        redirectBackoffUntil = Date.now() + wait
+        await setSharedBackoff(redirectBackoffUntil)
+        console.warn(`[edge-router] redirect-lookup 429 for ${path}, lookups paused ${Math.round(wait / 1000)}s`)
         return null
       }
       if (!res.ok) {
@@ -130,6 +194,7 @@ async function lookupDynamicRedirect(path: string): Promise<RedirectHit> {
         complete = false
         continue
       }
+      backoffStep = 0
       const data: any = await res.json()
       if (data?.action === 'redirect' && data.redirectTo) {
         // The API builds the target as frontend_url + url_key; a url_key with a leading slash leaves "//" in the path
