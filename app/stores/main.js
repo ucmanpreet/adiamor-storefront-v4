@@ -927,7 +927,8 @@ export const useMainStore = defineStore('main', {
                 url += `&sku=${encodeURIComponent(payload.sku)}`;
             }
 
-            const response = await useApi().get(withCurrency(url));
+            // No automatic retry: on 429 a second request only adds load to a limit that is already hit
+            const response = await useApi().get(withCurrency(url), { retry: false });
 
             return response?.data ?? null;
           } catch (error) {
