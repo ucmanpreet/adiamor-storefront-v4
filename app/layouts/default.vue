@@ -74,6 +74,8 @@ const isSearchView = computed(() => route.name === 'searchPage');
 const isCartPage = computed(() => ['summaryPage', 'contactPage', 'paymentPage', 'reviewPage'].includes(route.name));
 const getVisitorCode = computed(() => $getVisitorCode());
 const isBundleView = computed(() => route.name === 'yourSettingPage');
+// Product pages (pages/_.vue) set their own og tags; the layout's home defaults must not appear there
+const isProductView = computed(() => route.name === 'all');
 
 useHead(() => {
   const pageTitle = metaData.value?.title;
@@ -91,12 +93,14 @@ useHead(() => {
       { name: 'apple-mobile-web-app-capable', content: 'yes' },
       { name: 'apple-mobile-web-app-status-bar-style', content: 'default' },
       { key: 'description', name: 'description', content: metaData.value?.description },
-      { key: 'og:title', property: 'og:title', content: metaData.value?.title },
-      { key: 'og:description', property: 'og:description', content: metaData.value?.description },
-      { key: 'og:url', property: 'og:url', content: canonicalUrl },
-      { key: 'og:type', property: 'og:type', content: 'website' },
       { key: 'og:site_name', property: 'og:site_name', content: siteName },
-      { key: 'og:image', property: 'og:image', content: metaData.value?.image },
+      ...(isProductView.value ? [] : [
+        { key: 'og:title', property: 'og:title', content: metaData.value?.title },
+        { key: 'og:description', property: 'og:description', content: metaData.value?.description },
+        { key: 'og:url', property: 'og:url', content: canonicalUrl },
+        { key: 'og:type', property: 'og:type', content: 'website' },
+        { key: 'og:image', property: 'og:image', content: metaData.value?.image },
+      ]),
       { key: 'keyword', name: 'keyword', content: metaData.value?.keyword },
       // Additional meta tags
       { name: "viewport", content: "width=device-width, initial-scale=1" },
