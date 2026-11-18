@@ -918,7 +918,7 @@ export const useMainStore = defineStore('main', {
           }
       },
 
-      async fetchProductData({ payload }) {
+      async fetchProductData({ payload, onError }) {
           try {
             const params = encodeURIComponent(payload.params) || payload.params;
             const key = payload.isPair ? 'pair_key' : 'url_key';
@@ -934,6 +934,7 @@ export const useMainStore = defineStore('main', {
           } catch (error) {
             // null: the product does not exist. undefined: the request failed (429, timeout), so callers may retry
             if (error?.status === 404) return null;
+            onError?.(error);
             console.error('Error fetching product:', error);
           }
       },

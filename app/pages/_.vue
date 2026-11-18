@@ -278,6 +278,20 @@ function receiveDiscountedPrice(price) {
 const serverFetchFailed = useState(`pdp-failed:${route.fullPath}`, () => false);
 // Taken here, before any await, while Nuxt's context is still available
 const cacheControl = useResponseHeader('Cache-Control');
+// Why the server could not get the product, readable in the response headers (DevTools / curl -I):
+// the API status and Cloudflare's ray ID of the API response, to look the request up in the API zone's Security Events
+const productFetchInfo = useResponseHeader('X-Product-Fetch');
+function describeFetchError(error) {
+    const headers = error?.response?.headers;
+    const header = (name) => headers?.get?.(name);
+    return [
+        `status=${error?.status ?? 'none'}`,
+        header('cf-ray') && `cf-ray=${header('cf-ray')}`,
+        header('cf-mitigated') && `cf-mitigated=${header('cf-mitigated')}`,
+        header('server') && `server=${header('server')}`,
+        !error?.status && error?.message && `error=${String(error.message).slice(0, 80)}`,
+    ].filter(Boolean).join('; ').replace(/[^\x20-\x7e]/g, '');
+}
 
 async function loadProduct() {
     const currentPath = route.path;
@@ -287,7 +301,8 @@ async function loadProduct() {
     try {
         let params = isPair ? `${query?.first_pair_key}&${query?.second_pair_key}` : currentPath;
         const productData = await store.fetchProductData({
-            payload: { isPair, params, sku: query?.sku }
+            payload: { isPair, params, sku: query?.sku },
+            onError: (error) => { if (import.meta.server) productFetchInfo.value = describeFetchError(error); }
         });
         if (productData === undefined && import.meta.server) {
             serverFetchFailed.value = true;
