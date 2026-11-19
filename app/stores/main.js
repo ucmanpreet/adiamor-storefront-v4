@@ -37,6 +37,7 @@ const initialState = {
   productGtmData: '',
   wishListData : null,
   metaData: null,
+  productFetchError: '',
   heartCount: 0,
   countryList: [],
   usStateList: [],
@@ -934,6 +935,8 @@ export const useMainStore = defineStore('main', {
           } catch (error) {
             // null: the product does not exist. undefined: the request failed (429, timeout), so callers may retry
             if (error?.status === 404) return null;
+            // Read by pages/_.vue and sent as the x-pdp-error header (console is stripped from production builds)
+            this.productFetchError = `${error?.status || error?.statusCode || error?.name || 'error'}${error?.cause?.code ? ` ${error.cause.code}` : ''}`;
             console.error('Error fetching product:', error);
           }
       },

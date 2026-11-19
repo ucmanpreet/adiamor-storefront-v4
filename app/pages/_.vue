@@ -278,6 +278,8 @@ function receiveDiscountedPrice(price) {
 const serverFetchFailed = useState(`pdp-failed:${route.fullPath}`, () => false);
 // Taken here, before any await, while Nuxt's context is still available
 const cacheControl = useResponseHeader('Cache-Control');
+// Why the server could not get the product (e.g. 429); visible with `curl -I` because console output is stripped in production
+const pdpError = useResponseHeader('x-pdp-error');
 
 async function loadProduct() {
     const currentPath = route.path;
@@ -293,6 +295,7 @@ async function loadProduct() {
             serverFetchFailed.value = true;
             // A failed render must not be kept by a CDN cache
             cacheControl.value = 'no-store';
+            pdpError.value = String(store.productFetchError || 'unknown').replace(/[^\w .:-]/g, '').slice(0, 60);
         }
         return productData ?? null;
     } catch (err) {
